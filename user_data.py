@@ -1,15 +1,5 @@
-import mysql.connector
 from get_conn import create_connection
-import locale
-
-from datetime import datetime, timedelta
-
 from logger import logger
-from config import err_send
-
-
-# mydb = create_connection()
-# mycursor = mydb.cursor()
 
 
 class QueryExecutionError(Exception):

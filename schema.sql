@@ -11,6 +11,8 @@ CREATE TABLE users (
     FOREIGN KEY (subscription_id) REFERENCES subscriptions(subscription_id)
 );
 
+ALTER TABLE users ADD PRIMARY KEY (user_id);
+
 CREATE TABLE subscriptions (
     subscription_id INTEGER PRIMARY KEY,
     duration_months INTEGER,
