@@ -74,7 +74,10 @@ def get_all_users():
 def count_referrals(user_id):
     try:
         result = execute_query(sql_get_count_referrals, (user_id,))
-        return result[0][0]
+        if result:
+            return result[0][0]
+        else:
+            return 0
     except Exception as e:
         logger.error(f"QUERY_ERROR - count_referrals - {e}")
 
