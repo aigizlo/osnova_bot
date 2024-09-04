@@ -79,7 +79,8 @@ file_handler.setLevel(logging.DEBUG)  # Уровень для записи в ф
 
 # Добавляем консольный хендлер логов
 console_handler = logging.StreamHandler(sys.stdout)
-console_handler.setLevel(logging.DEBUG)  # Уровень для вывода на консоль (в данном случае, установлен на DEBUG)
+console_handler.setLevel(logging.DEBUG)
+console_handler.encoding = 'utf-8'  # Set encoding to utf-8
 
 # Создаем форматтер для хендлеров
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
