@@ -4,6 +4,7 @@ from aiogram.dispatcher import FSMContext
 import user_data
 import text
 import config
+import const
 from datetime import datetime, timedelta
 from logger import logger
 from config import dp, bot
@@ -75,7 +76,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
                                parse_mode='HTML')
         return
 
-    txt = text.ref_link(telegram_id, config.bot_name, count_referrals, user_balance)
+    txt = text.ref_link(telegram_id, const.bot_name, count_referrals, user_balance)
 
     await bot.send_message(chat_id=telegram_id,
                            text=txt,

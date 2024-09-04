@@ -1,5 +1,5 @@
 import mysql.connector
-from config import host, user, password, database
+from const import host, user, password, database
 from logger import logger
 
 
@@ -9,7 +9,6 @@ def create_connection():
             host=host,
             user=user,
             password=password,
-            unix_socket='/tmp/mysql.sock',
             database=database,
             autocommit=True
         )
