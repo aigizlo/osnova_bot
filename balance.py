@@ -1,20 +1,24 @@
-from config import coefficeint_bonus, partners, partner_bonus
 from get_conn import create_connection
 from logger import logger
 import math
+import sub
 
+
+# sub.used_promo_code(user_id=12321312,promo_code='NEWPROMO2024')
 from user_data import execute_query
 
-# запрос для оплаты с реф баланса
-sql_pay_from_bonus_query = """INSERT INTO user_balance_ops 
-            (user_id, optype, amount)
-                        VALUES (%s, 'bonus', -%s)"""
 
+
+# # запрос для оплаты с реф баланса
+# sql_pay_from_bonus_query = """INSERT INTO user_balance_ops
+#             (user_id, optype, amount)
+#                         VALUES (%s, 'bonus', -%s)"""
 #
-# запрос для начисления реферального бонуса
-sql_add_referral_bonus = """INSERT INTO user_balance_ops 
-            (user_id, optype, amount)
-                        VALUES (%s, 'bonus', %s)"""
+# #
+# # запрос для начисления реферального бонуса
+# sql_add_referral_bonus = """INSERT INTO user_balance_ops
+#             (user_id, optype, amount)
+#                         VALUES (%s, 'bonus', %s)"""
 #
 # def add_referral_bonus(user_id, purchase_amount):
 #     try:

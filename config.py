@@ -8,6 +8,8 @@ support = "@byshakirov"
 admin = 502811372
 err_send = 502811372
 
+admins = [502811372, 328521044]
+
 # aiogram
 bot = Bot(token=const.token)
 

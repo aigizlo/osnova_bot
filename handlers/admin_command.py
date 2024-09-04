@@ -1,20 +1,129 @@
-# from config import dp, admin_from_config, bot, file_ids
-# from aiogram import types
-# from keyboards.keyboards import *
-# from logic_keys.add_keys import keys_send, add_free_keys, add_keys, delete_key
-#
-# from logger import logger
-# from logic_keys.renewal_keys import renewal_keys_admin_command
-# from telebot_ import sync_send_photo, main_menu_telebot
-#
-# from user_data import UserData, get_list_admins_telegram_id, execute_query, QueryExecutionError
-#
+from config import dp, bot, admins
+from aiogram import types
+import sub
+import keyboards
+
+from logger import logger
+
+
+import user_data
+
 # sql_add_balance = "INSERT INTO user_balance_ops (user_id, optype, amount)  VALUES (%s, 'bonus', %s)"
 # sql_add_admin = "UPDATE users SET admin = %s WHERE user_id = %s"
-# user_data = UserData()
-#
-#
+
+
+@dp.message_handler(commands=['promo'])
+async def create_promo(message: types.Message):
+    command_parts = message.get_args().split()
+    telegram_id = message.from_user.id
+    if message.from_user.id not in admins:
+        await message.reply(f"Данная команда только для администраторов")
+        logger.info(f"ADMIN COMMAND - создать промокод, User - {telegram_id}, , НЕТ ПРАВ ДЛЯ ДАННОЙ КОМАНДЫ")
+        return
+
+    elif len(command_parts) != 2:
+        await message.reply("Неверное количество аргументов, пример - создать промокод MYPROMO 30")
+        logger.info(f"ADMIN COMMAND - /balance, User - {telegram_id}, Неверное количество аргументов")
+        return
+    code = command_parts[0]
+    period = command_parts[1]
+    result, answer = sub.create_promo_code(code, int(period))
+    if not result:
+        await message.reply(answer)
+        return
+    await message.reply(answer)
+    # await message.reply(answer)
+    logger.info(f"ADMIN_COMMANDS /free,  , admin - {message.from_user.id}")
+
+
+@dp.message_handler(commands=['promo_info'], state="*")
+async def check_free_keys(message: types.Message):
+    if message.from_user.id not in admins:
+        await message.reply("Данная команда только для администраторов")
+        return
+    txt = "Команда показывает отчет по промокодам\n"
+
+    report = sub.generate_promo_code_report()
+
+    await message.reply(txt + str(report))
+    logger.info(f"ADMIN_COMMANDS promo_info,  , admin - {message.from_user.id}")
+
+
+@dp.message_handler(commands=['admin'], state="*")
+async def check_free_keys(message: types.Message):
+    telegram_id = message.from_user.id
+    if message.from_user.id not in admins :
+        await message.reply(f"Данная команда только для администраторов")
+        logger.info(f"ADMIN COMMAND - /free, User - {telegram_id} ,НЕТ ПРАВ ДЛЯ ДАННОЙ КОМАНДЫ")
+        return
+    answer = f"""/get_logs - получить все логи(для прогера) \n\n
+/all_users - количество всех пользователей\n\n
+/promo_info - отчет по промокодам\n\n
+/admin - ваши команды\n\n
+/promo -создать промокод, например"/promo PROMO 30", где "PROMO"-промокод, "30"-дни\n\n"""
+    await message.reply(answer)
+    return
+
+
+@dp.message_handler(commands=['all_users'], state="*")
+async def check_free_keys(message: types.Message):
+    if message.from_user.id not in admins:
+        await message.reply("Данная команда только для администраторов")
+        return
+    txt = "Команда показывает общее число пользователей: \n"
+    answer = user_data.all_users()
+    await message.reply(txt + str(answer))
+    logger.info(f"ADMIN_COMMANDS /all_users,  , admin - {message.from_user.id}")
+
 # @dp.message_handler(commands=['user_info'], state="*")
+# async def user_info_command(message: types.Message):
+#
+#     if message.from_user.id not in admins:
+#         await message.reply("Данная команда только для администраторов")
+#         return
+#
+#     argument = message.get_args()
+#
+#     if argument[0] == '@':
+#         user_name = argument[1::]
+#         user_id = user_data.searche_user_id_with_user_name(user_name)
+#         if not user_id:
+#             await message.answer(f"Пользователь {user_name} не найден", parse_mode='HTML',
+#                                  disable_web_page_preview=True)
+#             return
+#
+#         await message.answer(user_txt_info, parse_mode='HTML')
+#
+#         return
+#
+#     user_id = argument
+#     user_txt_info = user_data.get_user_info(int(user_id))
+#
+#     if not user_txt_info:
+#         await message.answer(f"Пользователь {user_id} не найден", parse_mode='HTML', disable_web_page_preview=True)
+#         return
+#
+#     keys = user_data.get_user_keys_info(user_id)
+#
+#     if not keys:
+#         keys_txt_info = "У пользователя нет ключей"
+#     else:
+#         keys_txt_info = keys_send(keys)
+#
+#     await message.answer(user_txt_info + keys_txt_info, parse_mode='HTML')
+
+    # answer = f"/get_logs - получить все логи\n\n" \
+    #          f"/user_info - информация о пользователе 1 аргумент user_id или user_name, пример - /user_info 212 или /user_info @user_name\n\n" \
+    #          f"/all_users - количество всех пользователей\n\n" \
+    #          f"/free - количество свободных ключей на сервере\n\n" \
+    #          f"/admin - назначит/разжаловать админа 2 аргумента (/admin 17 0) 17 - user_id, 1 - назначить 0 - разжаловать " \
+    #          f"/trial - Команда показывает общее число пользователей взявших ключ бесплатно\n\n" \
+    #          f"/get_count_users - Команда показывает общее число пользователей присоединенных в какую то дату (2024-01-25)\n\n" \
+    #          f"/balance - начисляем вычитаем деньги с баланса(/balance (user_id) (summa)) или вычесть (/balance (user_id) -(summa))\n\n" \
+    #          f"/key_for - дарим ключ пользователю, пример /key_for (user_id) (day) \n\n" \
+    #          f"/delete_keys - удаляет ключ, пример /delete_keys (key_id) \n\n" \
+    #          f"/prolong_key - продлеваем ключ пользователю, пример /prolong_key (key_id) (месяц) \n\n"
+# @dp.message_handler(commands=['promo_info'], state="*")
 # async def user_info_command(message: types.Message):
 #     admins = get_list_admins_telegram_id()
 #
@@ -62,7 +171,7 @@
 #         keys_txt_info = keys_send(keys)
 #
 #     await message.answer(user_txt_info + keys_txt_info, parse_mode='HTML')
-#
+
 #
 #
 # @dp.message_handler(commands=['balance'], state="*")
@@ -95,7 +204,7 @@
 #             await message.reply(
 #                 f"Произошла ошибка при выполнении команды /balance. Пожалуйста, обратитесь к администратору.",
 #                 reply_markup=keyboards)
-#
+
 #
 # @dp.message_handler(commands=['admin'], state="*")
 # async def add_del_admin_command(message: types.Message):
@@ -132,41 +241,10 @@
 #         except QueryExecutionError as e:
 #             logger.error(f"Ошибка при выполнении команды /admin: {e},  ,")
 #             await message.reply(f"Произошла ошибка при выполнении команды /admin,  ,")
+
+
 #
-#
-# @dp.message_handler(commands=['free'], state="*")
-# async def check_free_keys(message: types.Message):
-#     admins = get_list_admins_telegram_id()
-#     telegram_id = message.from_user.id
-#     if message.from_user.id not in (admins + admin_from_config):
-#         await message.reply(f"Данная команда только для администраторов")
-#         logger.info(f"ADMIN COMMAND - /free, User - {telegram_id}, , НЕТ ПРАВ ДЛЯ ДАННОЙ КОМАНДЫ")
-#         return
-#
-#     User_Data = UserData()
-#
-#     answer = User_Data.count_free_keys()
-#
-#     await message.reply(answer)
-#     logger.info(f"ADMIN_COMMANDS /free,  , admin - {message.from_user.id}")
-#
-#
-# @dp.message_handler(commands=['all_users'], state="*")
-# async def check_free_keys(message: types.Message):
-#     admins = get_list_admins_telegram_id()
-#
-#     if message.from_user.id not in (admins + admin_from_config):
-#         await message.reply("Данная команда только для администраторов")
-#         return
-#
-#     User_Data = UserData()
-#
-#     txt = "Команда показывает общее число пользователей \n"
-#
-#     answer = User_Data.all_users()
-#
-#     await message.reply(str(answer) + txt)
-#     logger.info(f"ADMIN_COMMANDS /all_users,  , admin - {message.from_user.id}")
+
 #
 #
 # @dp.message_handler(commands=['get_logs'], state="*")
@@ -207,20 +285,6 @@
 #     await message.reply(answer)
 #
 #
-# # сколько людей взяли тест
-# @dp.message_handler(commands=['trial'], state="*")
-# async def check_free_keys(message: types.Message):
-#     admins = get_list_admins_telegram_id()
-#
-#     if message.from_user.id not in (admins + admin_from_config):
-#         await message.reply("Данная команда только для администраторов")
-#         return
-#     txt = "Команда показывает общее число пользователей взявших ключ бесплатно\n"
-#
-#     answer = user_data.get_count_free_keys()
-#
-#     await message.reply(txt + str(answer))
-#     logger.info(f"ADMIN_COMMANDS /trail,  , admin - {message.from_user.id}")
 #
 #
 # @dp.message_handler(commands=['all_keys'], state="*")
@@ -405,29 +469,29 @@
 #
 #     await bot.send_message(admin_telegram_id, f"Ключ {key_id} успешно удален")
 #     logger.info(f"ADMIN COMMAND - /delete_keys, ключ {key_id} успешно удален , ADMIN - {admin_user_id} ")
+
 #
-# #
-# # @dp.message_handler(commands=['new_location'], state="*")
-# # async def delete_keys(message: types.Message):
-# #     admins = get_list_admins_telegram_id()
-# #
-# #     if message.from_user.id not in (admins + admin_from_config):
-# #         await message.reply("Данная команда только для администраторов")
-# #         return
-# #
-# #     command_parts = message.get_args()  # Разбиваем аргументы на части
-# #
-# #     admin_info = user_data.get_user_data(message.from_user.id)
-# #
-# #     admin_user_id, admin_telegram_id = admin_info.get("user_id"), admin_info.get("telegram_id")
-# #
-# #     logger.info(f"ADMIN COMMAND - /delete_keys, ADMIN - {admin_user_id} ")
-# #
-# #     key_id = int(command_parts)
-# #
-# #     if not delete_key(key_id):
-# #         await bot.send_message(admin_telegram_id, f"Ключ {key_id} не был удален из за проблем на сервере")
-# #         logger.info(f"ADMIN COMMAND - /delete_keys, ключ {key_id} не был удален из за проблем на сервере, ADMIN - {admin_user_id} ")
-# #
-# #     await bot.send_message(admin_telegram_id, f"Ключ {key_id} успешно удален")
-# #     logger.info(f"ADMIN COMMAND - /delete_keys, ключ {key_id} успешно удален , ADMIN - {admin_user_id} ")
+# @dp.message_handler(commands=['new_location'], state="*")
+# async def delete_keys(message: types.Message):
+#     admins = get_list_admins_telegram_id()
+#
+#     if message.from_user.id not in (admins + admin_from_config):
+#         await message.reply("Данная команда только для администраторов")
+#         return
+#
+#     command_parts = message.get_args()  # Разбиваем аргументы на части
+#
+#     admin_info = user_data.get_user_data(message.from_user.id)
+#
+#     admin_user_id, admin_telegram_id = admin_info.get("user_id"), admin_info.get("telegram_id")
+#
+#     logger.info(f"ADMIN COMMAND - /delete_keys, ADMIN - {admin_user_id} ")
+#
+#     key_id = int(command_parts)
+#
+#     if not delete_key(key_id):
+#         await bot.send_message(admin_telegram_id, f"Ключ {key_id} не был удален из за проблем на сервере")
+#         logger.info(f"ADMIN COMMAND - /delete_keys, ключ {key_id} не был удален из за проблем на сервере, ADMIN - {admin_user_id} ")
+#
+#     await bot.send_message(admin_telegram_id, f"Ключ {key_id} успешно удален")
+#     logger.info(f"ADMIN COMMAND - /delete_keys, ключ {key_id} успешно удален , ADMIN - {admin_user_id} ")

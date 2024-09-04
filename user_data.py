@@ -86,10 +86,11 @@ def add_referral_balance(user_id, amount, description):
     values = (user_id, amount, description)
     execute_query(sql_add_ref_balance, values)
 
+
 # def subcribe_info
 
 
-def get_user_balance_bonus( user_id ):
+def get_user_balance_bonus(user_id):
     try:
         result = execute_query(sql_get_ref_balance, (user_id,))
         if not result:
@@ -106,6 +107,7 @@ def get_referrer_user_id(user_id):
     except Exception as e:
         logger.error(f"QUERY_ERROR - get_referrer_user_id - {e}")
 
+
 def check_user_in_system(telegram_id):
     try:
         with create_connection() as mydb:
@@ -119,6 +121,25 @@ def check_user_in_system(telegram_id):
     except Exception as e:
         logger.error(f"ERROR:check_user_in_system - Ошибка базы данных: {e}")
 
+
+def all_users():
+    result = execute_query("""SELECT COUNT(*) FROM users;""")
+    if not result:
+        return 0
+    return result[0][0]
+
+
+# def searche_user_id_with_user_name(user_name):
+#     try:
+#         query = """SELECT user_id FROM users WHERE username = %s"""
+#         result = execute_query(query, (user_name,))
+#         if result:
+#             return result[0][0]
+#         else:
+#             return None
+#     except Exception as e:
+#         logger.error(f"QUERY_ERROR - searche_with_usr_name - {e}")
+#         return None
 
 def if_new_user(user_id, first_name, referer_user_id, last_name, username):
     try:
@@ -160,6 +181,3 @@ def if_new_user(user_id, first_name, referer_user_id, last_name, username):
     except Exception as e:
         logger.error(f"ERROR:if_new_user - Ошибка базы данных: {e}")
         return None
-
-
-

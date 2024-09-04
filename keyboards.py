@@ -1,6 +1,5 @@
 from aiogram import types
-import config
-
+import const
 
 
 # кнопка Назад
@@ -14,12 +13,21 @@ def main_menu():
 
     return keyboard
 
+
 def keyboard_period():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(
         types.InlineKeyboardButton("1 месяц - 30 дней - 15 USD", callback_data=f"period:1"),
         types.InlineKeyboardButton("3 месяца - 90 дней - 40 USD", callback_data=f"period:3"),
         types.InlineKeyboardButton("12 месяцев - 365 дней - 150 USD", callback_data=f"period:12")
+    )
+    return keyboard
+
+
+def accept_button():
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard.add(
+        types.InlineKeyboardButton("🟢 ПРИНИМАЮ ПРАВИЛА 🟢", callback_data=f"accept_rules"),
     )
     return keyboard
 
@@ -34,13 +42,15 @@ def select_pay_method():
     )
     return keyboard
 
-def go_pay():
+
+def go_to_pay():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(
         types.InlineKeyboardButton("Перейти к оплате", callback_data="select_pay_method"),
         types.InlineKeyboardButton("⬅️ Назад", callback_data="go_back"),
     )
     return keyboard
+
 
 def select_card_or_usdt():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
@@ -50,6 +60,7 @@ def select_card_or_usdt():
         types.InlineKeyboardButton("⬅️ Назад", callback_data=f"go_back_to_main"),
     )
     return keyboard
+
 
 def back_to_main_menu():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
@@ -63,17 +74,25 @@ def back_to_main_menu():
 def subscribe():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(
-        types.InlineKeyboardButton("""✅ Канал "ОСНОВА" Подписаться""", url=config.tg_channel_link),
+        types.InlineKeyboardButton("""✅ Канал "ОСНОВА" Подписаться""", url=const.tg_channel_link),
         types.InlineKeyboardButton("🔁 Проверить подписку", callback_data="subscribe_check"),
 
     )
     return keyboard
 
-def subscribe():
+
+def join_chat():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(
-        types.InlineKeyboardButton("""✅Принимаю правила""", url=config.tg_channel_link),
+        types.InlineKeyboardButton("""Чат «ФУНДАМЕНТАЛИСТЫ - вступить""", url=const.tg_chat)
 
     )
     return keyboard
 
+
+def renewal_sub():
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard.add(
+        types.InlineKeyboardButton("""✅Продлить подписку""", callback_data='renewal_sub')
+    )
+    return keyboard

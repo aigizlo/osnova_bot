@@ -4,6 +4,8 @@ from aiogram import Dispatcher
 from aiogram.utils import executor
 
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+
+from handlers.admin_command import create_promo
 from handlers.handlers import *
 import text
 from handlers.handlers_main_menu import *
@@ -12,10 +14,10 @@ from aiogram import types
 from handlers.handlers_promo import select_promo_code
 from logger import logger
 import user_data
-import keyboards.keyboards
+import keyboards
 
 select_promo_code
-
+create_promo
 scheduler = AsyncIOScheduler()
 
 
@@ -41,16 +43,16 @@ async def process_start_command(message: types.Message, state: FSMContext):
             # Отправка сообщений для нового пользователя
             await bot.send_message(chat_id=telegram_id,
                                    text=text.instruction,
-                                   parse_mode="HTML", reply_markup=keyboards.keyboards.main_menu())
+                                   parse_mode="HTML", reply_markup=keyboards.main_menu())
             await asyncio.sleep(1)  # Небольшая задержка между сообщениями
 
         # Отправка основного сообщения (для новых и существующих пользователей)
         await bot.send_message(chat_id=telegram_id,
                                text=text.product,
-                               reply_markup=keyboards.keyboards.keyboard_period())
+                               reply_markup=keyboards.keyboard_period())
         await bot.send_message(chat_id=telegram_id,
                                text="Главное меню",
-                               reply_markup=keyboards.keyboards.main_menu())
+                               reply_markup=keyboards.main_menu())
 
         if new_user:
             logging.info(f"INFO: NEW USER - tg: {telegram_id}, user_id: {new_user}, "
