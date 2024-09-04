@@ -1,8 +1,6 @@
 from aiogram import types
-from config import tg_channel_link, article
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+import config
 
-from config import one_month, three_month, one_year
 
 
 # кнопка Назад
@@ -65,7 +63,7 @@ def back_to_main_menu():
 def subscribe():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(
-        types.InlineKeyboardButton("""✅ Канал "ОСНОВА" Подписаться""", url=tg_channel_link),
+        types.InlineKeyboardButton("""✅ Канал "ОСНОВА" Подписаться""", url=config.tg_channel_link),
         types.InlineKeyboardButton("🔁 Проверить подписку", callback_data="subscribe_check"),
 
     )
@@ -74,7 +72,7 @@ def subscribe():
 def subscribe():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(
-        types.InlineKeyboardButton("""✅Принимаю правила""", url=tg_channel_link),
+        types.InlineKeyboardButton("""✅Принимаю правила""", url=config.tg_channel_link),
 
     )
     return keyboard

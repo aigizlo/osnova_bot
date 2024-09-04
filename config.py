@@ -27,6 +27,7 @@ token = '6820291522:AAHbWTF-zSlL3bIdDqmjqSajYBsGbueRlQs'
 support = "@byshakirov"
 
 admin = 502811372
+err_send = 502811372
 
 # aiogram
 bot = Bot(token=token)
@@ -41,3 +42,17 @@ host = "localhost"
 user = "root"
 password = ""
 database = "OSNOVA"
+
+
+
+prices = {
+    "1": 15,
+    "3": 40,
+    "12": 150,
+}
+
+get_days = {
+    1: 30,
+    3: 90,
+    12: 365,
+}

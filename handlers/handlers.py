@@ -1,61 +1,13 @@
 from aiogram import types
 from aiogram.utils.exceptions import TelegramAPIError
 import text
-from config import dp, bot, err_send, secret_key, tg_channel, file_ids, admin, one_month_sale, three_month_sale
 import keyboards.keyboards
-from main import process_start_command
 from states import MyStates
-
+from config import bot, dp
 import aiogram
 from aiogram.dispatcher import FSMContext
 from logger import logger
-
-from config import support, dp, bot, file_ids
-
-video_id = None
-
-prices = {
-    "1": 15,
-    "3": 40,
-    "12": 150,
-}
-
-get_days = {
-    1: 30,
-    3: 90,
-    12: 365,
-}
-
-
-def tarrif_info(month, price, days):
-    tarrif_info = f'''
-    📚 Продукт: "ОСНОВА"
-    
-    🗓 Тарифный план {month} месяц
-    
-    - Цена: {price} USD
-    - Период {days} дней'''
-    return tarrif_info
-
-
-def tarrif_info_2(month, price, days):
-    txt = f'''
-    📚 Продукт: "ОСНОВА"
-    
-    🗓 Тарифный план: {month} месяц
-    
-    — Сумма к оплате: {price} USD
-    — Период: 30 дней
-    — Тип платежа: Автоплатеж с интервалом в {days} дней
-    
-    После оплаты будет предоставлен доступ:
-    
-    — Канал «ОСНОВА»
-    — Чат «ФУНДАМЕНТАЛИСТЫ»
-    
-    🚨 Оплачивая подписку, Вы принимаете условия Пользовательского соглашения и Политики конфиденциальности.
-    '''
-    return txt
+import config
 
 
 @dp.callback_query_handler(lambda c: c.data.startswith("period:"), state='*')
@@ -69,10 +21,10 @@ async def select_period(callback_query: types.CallbackQuery, state: FSMContext):
 
     user_id = callback_query.message.chat.id
 
-    price = prices.get(str(month))  # получаем цену, используя строковый ключ
-    days = get_days.get(month)  # получаем дни, используя целочисленный ключ
+    price = config.prices.get(str(month))  # получаем цену, используя строковый ключ
+    days = config.get_days.get(month)  # получаем дни, используя целочисленный ключ
 
-    txt_tarrif_info = tarrif_info(month, price, days)
+    txt_tarrif_info = text.tarrif_info(month, price, days)
     try:
         if callback_query.message.message_id:
             await bot.delete_message(chat_id=user_id, message_id=callback_query.message.message_id)
@@ -102,10 +54,10 @@ async def go_to_pay(callback_query: types.CallbackQuery, state: FSMContext):
     print(month, ' month')
     user_id = callback_query.message.chat.id
 
-    price = prices.get(str(month))  # получаем цену, используя строковый ключ
-    days = get_days.get(month)  # получаем дни, используя целочисленный ключ
+    price = config.prices.get(str(month))  # получаем цену, используя строковый ключ
+    days = config.get_days.get(month)  # получаем дни, используя целочисленный ключ
 
-    txt_tarrif_info = tarrif_info_2(month, price, days)
+    txt_tarrif_info = text.tarrif_info_2(month, price, days)
     try:
         if callback_query.message.message_id:
             await bot.delete_message(chat_id=user_id, message_id=callback_query.message.message_id)
@@ -168,7 +120,7 @@ async def go_back_to_main(callback_query: types.CallbackQuery, state: FSMContext
     month = user_data_state.get('month')
     price = user_data_state.get('price')
     days = user_data_state.get('days')
-    txt_tarrif_info = tarrif_info(month, price, days)
+    txt_tarrif_info = text.tarrif_info(month, price, days)
     try:
         if callback_query.message.message_id:
             await bot.delete_message(chat_id=callback_query.message.chat.id, message_id=callback_query.message.message_id)

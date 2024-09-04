@@ -56,7 +56,8 @@ async def process_start_command(message: types.Message, state: FSMContext):
 
     except Exception as e:
         error_message = f"Ошибка при обработке команды start: {e}"
-        await bot.send_message(err_send, error_message)
+        await bot.send_message(config.err_send, error_message)
+
         logging.error(error_message)
 
 
@@ -72,7 +73,7 @@ async def on_startup(dispatcher):
 
 
 async def on_startup_notify(dp: Dispatcher):
-    await dp.bot.send_message(err_send, "Бот Запущен")
+    await dp.bot.send_message(config.err_send, "Бот Запущен")
 
 
 if __name__ == '__main__':
