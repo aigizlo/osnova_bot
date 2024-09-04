@@ -4,8 +4,6 @@ import locale
 
 from datetime import datetime, timedelta
 
-from telebot_ import sync_send_message
-
 from logger import logger
 from config import err_send
 
@@ -168,7 +166,6 @@ def if_new_user(user_id, first_name, referer_user_id, last_name, username):
                 return user_id
     except Exception as e:
         logger.error(f"ERROR:if_new_user - Ошибка базы данных: {e}")
-        sync_send_message(err_send, f"ERROR:if_new_user - Ошибка базы данных: {e}")
         return None
 
 

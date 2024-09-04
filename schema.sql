@@ -35,3 +35,13 @@ CREATE TABLE promo_codes (
     discount_percent INTEGER NOT NULL CHECK (discount_percent BETWEEN 0 AND 100),
     valid_until DATE NOT NULL
 );
+
+CREATE TABLE balance (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    amount DECIMAL(10, 2) NOT NULL,
+    transaction_type ENUM('referral', 'add_balance', 'withdraw') NOT NULL,
+    description VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+);
