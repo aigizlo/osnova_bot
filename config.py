@@ -41,6 +41,7 @@ dp = Dispatcher(bot, storage=storage)
 host = "localhost"
 user = "root"
 password = ""
+# password = "new_password"
 database = "OSNOVA"
 
 

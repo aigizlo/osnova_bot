@@ -6,17 +6,15 @@ from aiogram.dispatcher import FSMContext
 from logger import logger
 import sub
 import text
-from config import support, dp, bot, file_ids
+from config import support, dp, bot
 import keyboards.keyboards
 from states import MyStates
 
 
 
-@dp.callback_query_handler(lambda c: c.data and c.data.startswith('apply_promo'), state=MyStates.go_to_pay)
+@dp.callback_query_handler(lambda c: c.data and c.data.startswith('apply_promo'), state="*")
 async def select_promo_code(callback_query: types.CallbackQuery, state: FSMContext):
     telegram_id = callback_query.from_user.id
-    user_data_state = await state.get_data()
-    month = user_data_state.get('month')
     # удаляем предыдущее сообщение
     try:
         if callback_query.message.message_id:
@@ -33,7 +31,6 @@ async def select_promo_code(callback_query: types.CallbackQuery, state: FSMConte
     await state.set_state(MyStates.insert_promo_code)
 
 
-# спрашиваем имя сервера
 @dp.message_handler(state=MyStates.insert_promo_code)
 async def process_key_name(message: types.Message, state: FSMContext):
     telegram_id = message.chat.id

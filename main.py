@@ -8,11 +8,13 @@ from handlers.handlers import *
 import text
 from handlers.handlers_main_menu import *
 from aiogram import types
+
+from handlers.handlers_promo import select_promo_code
 from logger import logger
 import user_data
 import keyboards.keyboards
 
-
+select_promo_code
 
 scheduler = AsyncIOScheduler()
 
