@@ -77,6 +77,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
         await bot.send_message(chat_id=user_id,
                                text=txt,
                                parse_mode='HTML')
+        logger.info(f'user_id - {user_id} - 👥 Реферальная программа')
         return
     txt = text.ref_link(user_id, const.bot_name, count_referrals, user_balance)
     await bot.send_message(chat_id=user_id,
