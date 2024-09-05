@@ -57,7 +57,11 @@ async def process_start_command(message: types.Message, state: FSMContext):
         if new_user:
             logging.info(f"INFO: NEW USER - tg: {telegram_id}, user_id: {new_user}, "
                          f"username: {user_name}, referer: {referer_user_id}")
-            bot.send_message(f'По вашей ссылке зарегистрирован пользователь {first_name}, {last_name}, {user_name}', referer_user_id)
+            if referer_user_id:
+                try:
+                    await bot.send_message(referer_user_id, f'По вашей ссылке зарегистрирован пользователь {first_name}, {last_name}, {user_name}')
+                except Exception as e:
+                    logger.error('Ошибка', e)
 
     except Exception as e:
         error_message = f"Ошибка при обработке команды start: {e}"

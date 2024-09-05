@@ -1,5 +1,6 @@
 from get_conn import create_connection
 from logger import logger
+import sub
 
 
 class QueryExecutionError(Exception):
@@ -140,6 +141,73 @@ def all_users():
 #     except Exception as e:
 #         logger.error(f"QUERY_ERROR - searche_with_usr_name - {e}")
 #         return None
+
+
+sql_user_info_user_id = '''SELECT 
+  u.username, 
+  u.referer_id, 
+  r.username AS referer_username, 
+  b.amount, 
+  s.stop_date, 
+  s.is_active
+FROM 
+  users u 
+  LEFT JOIN users r ON u.referer_id = r.user_id 
+  LEFT JOIN balance b ON u.user_id = b.user_id 
+  LEFT JOIN subscriptions s ON u.user_id = s.user_id 
+WHERE 
+  u.user_id = %s
+'''
+
+sql_user_info_user_name = '''SELECT 
+  u.username, 
+  u.referer_id, 
+  r.username AS referer_username, 
+  b.amount, 
+  s.stop_date, 
+  s.is_active
+FROM 
+  users u 
+  LEFT JOIN users r ON u.referer_id = r.user_id 
+  LEFT JOIN balance b ON u.user_id = b.user_id 
+  LEFT JOIN subscriptions s ON u.user_id = s.user_id 
+WHERE 
+  u.username = %s
+'''
+
+
+def get_user_info(user_id=None, user_name=None):
+    if user_id:
+        info = execute_query(sql_user_info_user_id, (user_id,))
+    elif user_name:
+        print('мы тут')
+        info = execute_query(sql_user_info_user_name, (user_name,))
+        print(info,' info')
+    if not info:
+        return "Пользователь не найден"
+
+    user_info = info[0]
+    username = user_info[0]
+    referer_id = user_info[1]
+    referer_username = user_info[2]
+    amount = user_info[3]
+    if not amount:
+        amount = 0
+    stop_date = user_info[4]
+    is_active = user_info[5]
+
+    text = f"Информация о пользователе:\n"
+    text += f"Имя: {username}\n"
+    if referer_id:
+        text += f"Реферер: @{referer_username} ({referer_id})\n"
+    else:
+        text += f"Реферер: Нет\n"
+    text += f"Баланс: {amount}\n"
+    text += f"Дата окончания подписки: {'Да' if stop_date else 'Нет'}\n"
+    text += f"Активность подписки: {'Да' if is_active else 'Нет'}"
+
+    return text
+
 
 def if_new_user(user_id, first_name, referer_user_id, last_name, username):
     try:

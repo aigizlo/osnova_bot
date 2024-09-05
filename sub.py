@@ -161,7 +161,6 @@ def generate_promo_code_report():
     promo_codes = execute_query(sql_get_promo_info)
     # Generate the report
     report = "📊 Promo Code Report 📊\n"
-    report += "-------------------------\n"
     for promo_code in promo_codes:
         used = promo_code[2]
         if used == 1:
