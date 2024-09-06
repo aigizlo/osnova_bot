@@ -12,56 +12,84 @@ from handlers.handlers_main_menu import *
 from aiogram import types
 
 from handlers.handlers_promo import select_promo_code
+from keyboards import set_default_commands
+# from keyboards.admin_buutons import set_default_commands
 from logger import logger
 import user_data
 import keyboards
+from aiogram.utils.exceptions import ChatNotFound
+
 
 select_promo_code
 create_promo
 scheduler = AsyncIOScheduler()
 
-
+channel_id = -1002258474082
 @dp.message_handler(commands=['start'], state="*")
 async def process_start_command(message: types.Message, state: FSMContext):
-    telegram_id = message.from_user.id
+    user_id = message.from_user.id
     user_name = message.from_user.username
     first_name = message.from_user.first_name
     last_name = message.from_user.last_name
     referer_user_id = message.get_args()
+    sub_info = sub.get_subscription_info(user_id)
+    if not sub_info:
+        try:
+            await bot.ban_chat_member(chat_id=channel_id, user_id=user_id)
+            logger.info(f'Пользователь {user_id} исключен из канала {channel_id}')
+        except Exception as e:
+            logger.error(f'Ошибка при исключении пользователя: {e}')
+    else:
+        try:
+            # Сначала проверяем, забанен ли пользователь
+            try:
+                member = await bot.get_chat_member(chat_id=channel_id, user_id=user_id)
+                if member.status == 'kicked':
+                    await bot.unban_chat_member(chat_id=channel_id, user_id=user_id)
+                    logger.info(f'Пользователь {user_id} разбанен в канале {channel_id}')
+            except Exception as e:
+                pass  # Пользователь не в канале, это нормально
 
-    logger.info(f"Start command received from {telegram_id}, {user_name}, {first_name}")
+            # Генерируем пригласительную ссылку
+            invite_link = await bot.create_chat_invite_link(chat_id=channel_id)
 
+            # Отправляем пользователю приглашение
+            await bot.send_message(user_id, f"Вот ваша ссылка для входа в канал: {invite_link.invite_link}")
+            logger.info(f'Пользователь {user_id} приглашен в канал {channel_id}')
+
+        except ChatNotFound:
+            logger.error(f'Канал {channel_id} не найден')
+        except Exception as e:
+            logger.error(f'Ошибка при приглашении пользователя: {e}')
+
+    logger.info(f"Start command received from {user_id}, {user_name}, {first_name}")
     # Установка состояния
     await state.set_state(MyStates.select_period)
-    logger.info(f"State was set to {MyStates.select_period}")
-
     try:
-        new_user = user_data.if_new_user(telegram_id, first_name, referer_user_id, last_name, user_name)
-        logger.info(f"New user status: {new_user}")
-
+        new_user = user_data.if_new_user(user_id, first_name, referer_user_id, last_name, user_name)
         if new_user:
             # Отправка сообщений для нового пользователя
-            await bot.send_message(chat_id=telegram_id,
+            await bot.send_message(chat_id=user_id,
                                    text=text.instruction,
                                    parse_mode="HTML", reply_markup=keyboards.main_menu())
             await asyncio.sleep(1)  # Небольшая задержка между сообщениями
 
-        # Отправка основного сообщения (для новых и существующих пользователей)
-        await bot.send_message(chat_id=telegram_id,
-                               text=text.product,
-                               reply_markup=keyboards.keyboard_period())
-        await bot.send_message(chat_id=telegram_id,
-                               text="Главное меню",
-                               reply_markup=keyboards.main_menu())
-
-        if new_user:
-            logging.info(f"INFO: NEW USER - tg: {telegram_id}, user_id: {new_user}, "
+            logging.info(f"INFO: NEW USER - tg: {user_id}, user_id: {new_user}, "
                          f"username: {user_name}, referer: {referer_user_id}")
             if referer_user_id:
                 try:
-                    await bot.send_message(referer_user_id, f'По вашей ссылке зарегистрирован пользователь {first_name}, {last_name}, {user_name}')
+                    await bot.send_message(referer_user_id,
+                                           f'По вашей ссылке зарегистрирован пользователь {first_name}, {last_name}, {user_name}')
                 except Exception as e:
                     logger.error('Ошибка', e)
+
+        # Отправка основного сообщения (для новых и существующих пользователей)
+        await bot.send_message(chat_id=user_id,
+                               text=text.product,
+                               reply_markup=keyboards.keyboard_period())
+        await bot.send_message(chat_id=user_id,
+                               text="Главное меню",
+                               reply_markup=keyboards.main_menu())
 
     except Exception as e:
         error_message = f"Ошибка при обработке команды start: {e}"
@@ -76,7 +104,7 @@ async def process_start_command(message: types.Message, state: FSMContext):
 
 async def on_startup(dispatcher):
     # Устанавливаем дефолтные команды
-    # await set_default_commands(dispatcher)
+    await set_default_commands(dispatcher)
     # Уведомляет про запуск
     await on_startup_notify(dispatcher)
 

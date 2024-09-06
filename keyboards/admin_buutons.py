@@ -3,16 +3,13 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMar
 from aiogram import types
 
 
-async def set_default_commands(dp):
-    await dp.bot.set_my_commands(
-        [
-            types.BotCommand("start", "Запустить бота"),
-            types.BotCommand("menu", "Главное меню"),
-            types.BotCommand("my_info", "Вывести информацию о себе"),
-            types.BotCommand("help", "Техническая поддержка"),
-            types.BotCommand("instruction", "Инструкция"),
-        ]
-    )
+# async def set_default_commands(dp):
+#     await dp.bot.set_my_commands(
+#         [
+#             types.BotCommand("start", "Запустить бота"),
+#             types.BotCommand("admin", "Меню администратора"),
+#         ]
+#     )
 
 
 adminpanelmenu = ReplyKeyboardMarkup(

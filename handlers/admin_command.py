@@ -49,7 +49,7 @@ async def check_free_keys(message: types.Message):
 
 
 @dp.message_handler(commands=['admin'], state="*")
-async def check_free_keys(message: types.Message):
+async def admin_command(message: types.Message):
     telegram_id = message.from_user.id
     if message.from_user.id not in admins:
         await message.reply(f"Данная команда только для администраторов")
@@ -66,7 +66,7 @@ async def check_free_keys(message: types.Message):
 
 
 @dp.message_handler(commands=['all_users'], state="*")
-async def check_free_keys(message: types.Message):
+async def all_users_command(message: types.Message):
     if message.from_user.id not in admins:
         await message.reply("Данная команда только для администраторов")
         return
@@ -97,7 +97,7 @@ async def user_info_command(message: types.Message):
                          disable_web_page_preview=True)
 
 @dp.message_handler(commands=['clear_promo'], state="*")
-async def user_info_command(message: types.Message):
+async def clear_promo_command(message: types.Message):
     if message.from_user.id not in admins:
         await message.reply("Данная команда только для администраторов")
         return

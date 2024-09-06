@@ -2,14 +2,32 @@ from aiogram import types
 import const
 
 
+async def set_default_commands(dp):
+    await dp.bot.set_my_commands(
+        [
+            types.BotCommand("start", "Запустить бота"),
+            types.BotCommand("admin", "Меню администратора"),
+        ]
+    )
+
 # кнопка Назад
 def main_menu():
-    keyboard = types.ReplyKeyboardMarkup(row_width=2)
+    keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
+
     button1 = types.KeyboardButton('🗓 Тарифные планы')
-    button3 = types.KeyboardButton('🗃 Моя подписка')
-    button2 = types.KeyboardButton('👥 Реферальная программа')
+    button2 = types.KeyboardButton('🗃 Моя подписка')
+    button3 = types.KeyboardButton('Отзывы')
     button4 = types.KeyboardButton('🤝 Поддержка')
-    keyboard.add(button1, button2, button3, button4)
+    button5 = types.KeyboardButton('👥 Реферальная программа')
+
+    # Добавляем первый ряд с двумя кнопками
+    keyboard.row(button1, button2)
+
+    # Добавляем второй ряд с одной кнопкой на всю ширину
+    keyboard.row(button3)
+
+    # Добавляем третий ряд с двумя кнопками
+    keyboard.row(button4, button5)
 
     return keyboard
 
