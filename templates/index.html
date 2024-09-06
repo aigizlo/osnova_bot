@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Статистика</title>
+    <style>
+        table {
+            width: 80%;
+            border-collapse: collapse;
+            margin: 20px auto;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: center;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Статистика продаж</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>1мес</th>
+                <th>3мес</th>
+                <th>12мес</th>
+                <th>Общее</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sale_stat in sale_stats %}
+            <tr>
+                <td>{{ sale_stat[0] }}</td>
+                <td>{{ sale_stat[1] }}</td>
+                <td>{{ sale_stat[2] }}</td>
+                <td>{{ sale_stat[3] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h1>Прибыль</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>1мес</th>
+                <th>3мес</th>
+                <th>12мес</th>
+                <th>Общее</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sale_stat in sale_stats %}
+            <tr>
+                <td>{{ sale_stat[0] * 15 }}</td>
+                <td>{{ sale_stat[1] * 40}}</td>
+                <td>{{ sale_stat[2] * 150 }}</td>
+                <td>{{ sale_stat[0] * 15 +  sale_stat[1] * 40 + sale_stat[2] * 150 }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h1>Ссылки</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Ссылка</th>
+                <th>Название</th>
+                <th>Переходы</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for link in links %}
+            <tr>
+                <td>{{ link[0] }}</td>
+                <td>{{ link[1] }}</td>
+                <td>{{ link[2] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h2>Пользователи и их рефералы</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>User ID</th>
+                <th>Username</th>
+                <th>Referrer</th>
+                <th>Сколько рефов</th>
+                <th>Баланс</th>
+                <th>Подписка</th>
+                <th>Начало подписки</th>
+                <th>Конец подписки</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+                <td>{{ user[0] }}</td>
+                <td>{{ user[1] }}</td>
+                <td>{{ user[7] if user[7] is not none else 'Пусто' }}</td>
+                <td>{{ user[2] }}</td>
+                <td>{{ user[3] }}</td>
+                <td>
+                    {% if user[4] == 1 %}
+                        Активная
+                    {% elif user[4] is none %}
+                        Не активная
+                    {% else %}
+                        {{ user[4] }}
+                    {% endif %}
+                </td>
+                <td>{{ user[5] if user[5] is not none else 'Пусто' }}</td>
+                <td>{{ user[6] if user[6] is not none else 'Пусто' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

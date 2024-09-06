@@ -2,8 +2,9 @@ import asyncio
 import logging
 from aiogram import Dispatcher
 from aiogram.utils import executor
-
+from links import tracker
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import const
 
 from handlers.admin_command import create_promo
 from handlers.handlers import *
@@ -24,7 +25,6 @@ select_promo_code
 create_promo
 scheduler = AsyncIOScheduler()
 
-channel_id = -1002258474082
 @dp.message_handler(commands=['start'], state="*")
 async def process_start_command(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
@@ -32,70 +32,78 @@ async def process_start_command(message: types.Message, state: FSMContext):
     first_name = message.from_user.first_name
     last_name = message.from_user.last_name
     referer_user_id = message.get_args()
-    sub_info = sub.get_subscription_info(user_id)
-    if not sub_info:
-        try:
-            await bot.ban_chat_member(chat_id=channel_id, user_id=user_id)
-            logger.info(f'Пользователь {user_id} исключен из канала {channel_id}')
-        except Exception as e:
-            logger.error(f'Ошибка при исключении пользователя: {e}')
-    else:
-        try:
-            # Сначала проверяем, забанен ли пользователь
-            try:
-                member = await bot.get_chat_member(chat_id=channel_id, user_id=user_id)
-                if member.status == 'kicked':
-                    await bot.unban_chat_member(chat_id=channel_id, user_id=user_id)
-                    logger.info(f'Пользователь {user_id} разбанен в канале {channel_id}')
-            except Exception as e:
-                pass  # Пользователь не в канале, это нормально
-
-            # Генерируем пригласительную ссылку
-            invite_link = await bot.create_chat_invite_link(chat_id=channel_id)
-
-            # Отправляем пользователю приглашение
-            await bot.send_message(user_id, f"Вот ваша ссылка для входа в канал: {invite_link.invite_link}")
-            logger.info(f'Пользователь {user_id} приглашен в канал {channel_id}')
-
-        except ChatNotFound:
-            logger.error(f'Канал {channel_id} не найден')
-        except Exception as e:
-            logger.error(f'Ошибка при приглашении пользователя: {e}')
-
-    logger.info(f"Start command received from {user_id}, {user_name}, {first_name}")
-    # Установка состояния
-    await state.set_state(MyStates.select_period)
     try:
-        new_user = user_data.if_new_user(user_id, first_name, referer_user_id, last_name, user_name)
-        if new_user:
-            # Отправка сообщений для нового пользователя
-            await bot.send_message(chat_id=user_id,
-                                   text=text.instruction,
-                                   parse_mode="HTML", reply_markup=keyboards.main_menu())
-            await asyncio.sleep(1)  # Небольшая задержка между сообщениями
+        referer_user_id = int(referer_user_id)
 
-            logging.info(f"INFO: NEW USER - tg: {user_id}, user_id: {new_user}, "
-                         f"username: {user_name}, referer: {referer_user_id}")
-            if referer_user_id:
+        sub_info = sub.get_subscription_info(user_id)
+        if not sub_info:
+            try:
+                await bot.ban_chat_member(chat_id=const.channel_id, user_id=user_id)
+                logger.info(f'Пользователь {user_id} исключен из канала {const.channel_id}')
+            except Exception as e:
+                logger.error(f'Ошибка при исключении пользователя: {e}')
+        else:
+            try:
+                # Сначала проверяем, забанен ли пользователь
                 try:
-                    await bot.send_message(referer_user_id,
-                                           f'По вашей ссылке зарегистрирован пользователь {first_name}, {last_name}, {user_name}')
+                    member = await bot.get_chat_member(chat_id=const.channel_id, user_id=user_id)
+                    if member.status == 'kicked':
+                        await bot.unban_chat_member(chat_id=const.channel_id, user_id=user_id)
+                        logger.info(f'Пользователь {user_id} разбанен в канале {const.channel_id}')
                 except Exception as e:
-                    logger.error('Ошибка', e)
+                    pass  # Пользователь не в канале, это нормально
 
-        # Отправка основного сообщения (для новых и существующих пользователей)
-        await bot.send_message(chat_id=user_id,
-                               text=text.product,
-                               reply_markup=keyboards.keyboard_period())
-        await bot.send_message(chat_id=user_id,
-                               text="Главное меню",
-                               reply_markup=keyboards.main_menu())
+                # Генерируем пригласительную ссылку
+                invite_link = await bot.create_chat_invite_link(chat_id=const.channel_id)
 
-    except Exception as e:
-        error_message = f"Ошибка при обработке команды start: {e}"
-        await bot.send_message(config.err_send, error_message)
+                # Отправляем пользователю приглашение
+                await bot.send_message(user_id, f"Вот ваша ссылка для входа в канал: {invite_link.invite_link}")
+                logger.info(f'Пользователь {user_id} приглашен в канал {const.channel_id}')
 
-        logging.error(error_message)
+            except ChatNotFound:
+                logger.error(f'Канал {const.channel_id} не найден')
+            except Exception as e:
+                logger.error(f'Ошибка при приглашении пользователя: {e}')
+
+        logger.info(f"Start command received from {user_id}, {user_name}, {first_name}")
+        # Установка состояния
+        await state.set_state(MyStates.select_period)
+        try:
+            new_user = user_data.if_new_user(user_id, first_name, referer_user_id, last_name, user_name)
+            if new_user:
+                # Отправка сообщений для нового пользователя
+                await bot.send_message(chat_id=user_id,
+                                       text=text.instruction,
+                                       parse_mode="HTML", reply_markup=keyboards.main_menu())
+                await asyncio.sleep(1)  # Небольшая задержка между сообщениями
+
+                logging.info(f"INFO: NEW USER - tg: {user_id}, user_id: {new_user}, "
+                             f"username: {user_name}, referer: {referer_user_id}")
+                if referer_user_id:
+                    try:
+                        await bot.send_message(referer_user_id,
+                                               f'По вашей ссылке зарегистрирован пользователь {first_name}, {last_name}, {user_name}')
+                    except Exception as e:
+                        logger.error('Ошибка', e)
+
+            # Отправка основного сообщения (для новых и существующих пользователей)
+            await bot.send_message(chat_id=user_id,
+                                   text=text.product,
+                                   reply_markup=keyboards.keyboard_period())
+            await bot.send_message(chat_id=user_id,
+                                   text="Главное меню",
+                                   reply_markup=keyboards.main_menu())
+
+        except Exception as e:
+            error_message = f"Ошибка при обработке команды start: {e}"
+            await bot.send_message(config.err_send, error_message)
+
+            logging.error(error_message)
+    except ValueError:
+        hash_link = referer_user_id
+        tracker.track_link(hash_link)
+        logger.info(f'перешли по ссылке {hash_link}')
+
 
 
 # def job_function():
@@ -119,3 +127,53 @@ if __name__ == '__main__':
 
     executor.start_polling(dp, on_startup=on_startup, skip_updates=False)
     logger.info('Бот запущен')
+
+
+
+"""SELECT
+    u.user_id,
+    u.username,
+    COUNT(r.user_id) AS referral_count,
+    COALESCE(SUM(b.amount), 0) AS balance,
+    s.is_active AS subscription,
+    MAX(s.start_date) AS start_date,
+    MAX(s.stop_date) AS stop_date
+FROM
+    users u
+LEFT JOIN
+    users r ON u.user_id = r.referer_id
+LEFT JOIN
+    (SELECT user_id, SUM(amount) as amount
+     FROM balance
+     GROUP BY user_id) b ON u.user_id = b.user_id
+LEFT JOIN
+    subscriptions s ON u.user_id = s.user_id AND s.is_active = 1
+GROUP BY
+    u.user_id, u.username
+ORDER BY
+    referral_count DESC;"""
+
+
+
+# SELECT
+#          u.user_id,
+#     ->     u.username,
+#     ->     COUNT(r.user_id) AS referral_count,
+#     ->     COALESCE(SUM(b.amount), 0) AS balance,
+#     ->     s.is_active AS subscription,
+#     ->     MAX(s.start_date) AS start_date,
+#     ->     MAX(s.stop_date) AS stop_date
+#     -> FROM
+#     ->     users u
+#     -> LEFT JOIN
+#     ->     users r ON u.user_id = r.referer_id
+#     -> LEFT JOIN
+#     ->     (SELECT user_id, SUM(amount) as amount
+#     ->      FROM balance
+#     ->      GROUP BY user_id) b ON u.user_id = b.user_id
+#     -> LEFT JOIN
+#     ->     subscriptions s ON u.user_id = s.user_id AND s.is_active = 1
+#     -> GROUP BY
+#     ->     u.user_id, u.username
+#     -> ORDER BY
+#     ->     referral_count DESC

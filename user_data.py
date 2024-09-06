@@ -1,3 +1,4 @@
+import get_conn
 from get_conn import create_connection
 from logger import logger
 import sub
@@ -21,6 +22,33 @@ def execute_query(query, params=None):
 
         raise QueryExecutionError(f"Ошибка при выполнении запроса : {query},Error -  {e}")
 
+
+sql_all_users_info = """
+SELECT
+    u.user_id,
+    u.username,
+    COUNT(r.user_id) AS referral_count,
+    COALESCE(SUM(b.amount), 0) AS balance,
+    s.is_active AS subscription,
+    MAX(s.start_date) AS start_date,
+    MAX(s.stop_date) AS stop_date,
+    ru.username AS referer_username
+FROM
+    users u
+LEFT JOIN
+    users r ON u.user_id = r.referer_id
+LEFT JOIN
+    (SELECT user_id, SUM(amount) as amount
+     FROM balance
+     GROUP BY user_id) b ON u.user_id = b.user_id
+LEFT JOIN
+    subscriptions s ON u.user_id = s.user_id AND s.is_active = 1
+LEFT JOIN
+    users ru ON u.referer_id = ru.user_id
+GROUP BY
+    u.user_id, u.username, ru.username
+ORDER BY
+    referral_count DESC"""
 
 sql_get_ref_balance = """
 SELECT 
@@ -182,7 +210,7 @@ def get_user_info(user_id=None, user_name=None):
     elif user_name:
         print('мы тут')
         info = execute_query(sql_user_info_user_name, (user_name,))
-        print(info,' info')
+        print(info, ' info')
     if not info:
         return "Пользователь не найден"
 
@@ -249,3 +277,15 @@ def if_new_user(user_id, first_name, referer_user_id, last_name, username):
     except Exception as e:
         logger.error(f"ERROR:if_new_user - Ошибка базы данных: {e}")
         return None
+
+
+def show_user_data():
+    result = get_conn.execute_query(sql_all_users_info)
+    return result
+
+
+def show_links_info():
+    sql = """select link, link_name, clicks from links"""
+    result = get_conn.execute_query(sql)
+    print(result)
+    return result

@@ -1,7 +1,10 @@
 from config import dp, bot, admins
 from aiogram import types
 import sub
+import const
 import keyboards
+import promo
+from links import tracker
 
 from logger import logger
 
@@ -42,7 +45,7 @@ async def check_free_keys(message: types.Message):
         return
     txt = "Команда показывает отчет по промокодам\n"
 
-    report = sub.generate_promo_code_report()
+    report = promo.generate_promo_code_report()
 
     await message.reply(txt + str(report))
     logger.info(f"ADMIN_COMMANDS promo_info,  , admin - {message.from_user.id}")
@@ -60,9 +63,24 @@ async def admin_command(message: types.Message):
 /promo_info - отчет по промокодам\n\n
 /admin - ваши команды\n\n
 /promo -создать промокод, например"/promo PROMO 30", где "PROMO"-промокод, "30"-дни\n\n
-/user - инфо об юзере, например /user @byshakirov или по id /user 502811372 \n\n"""
+/user - инфо об юзере, например /user @byshakirov или по id /user 502811372 \n\n
+/clear_promo - удаляет использованные и просроченные промокоды \n\n
+/create_links - создать ссылку, через пробел название \n\n"""
+
+
     await message.reply(answer)
     return
+# create_links
+
+@dp.message_handler(commands=['count_users'], state="*")
+async def all_users_command(message: types.Message):
+    if message.from_user.id not in admins:
+        await message.reply("Данная команда только для администраторов")
+        return
+    txt = "Команда показывает общее число пользователей: \n"
+    answer = user_data.all_users()
+    await message.reply(txt + str(answer))
+    logger.info(f"ADMIN_COMMANDS /all_users,  , admin - {message.from_user.id}")
 
 
 @dp.message_handler(commands=['all_users'], state="*")
@@ -82,6 +100,8 @@ async def user_info_command(message: types.Message):
         await message.reply("Данная команда только для администраторов")
         return
     argument = message.get_args()
+    if not argument:
+        return
     if argument[0] == '@':
         user_name = argument[1::]
         print(user_name)
@@ -96,12 +116,30 @@ async def user_info_command(message: types.Message):
     await message.answer(user_info, parse_mode='HTML',
                          disable_web_page_preview=True)
 
+
 @dp.message_handler(commands=['clear_promo'], state="*")
 async def clear_promo_command(message: types.Message):
     if message.from_user.id not in admins:
         await message.reply("Данная команда только для администраторов")
         return
+    result = promo.clear_used_promo()
+    print(result)
+    answer = "Использованные или просроченные промокоды удалены"
+    await message.answer(answer, disable_web_page_preview=True)
 
+
+@dp.message_handler(commands=['create_links'], state="*")
+async def create_links(message: types.Message):
+    if message.from_user.id not in admins:
+        await message.reply("Данная команда только для администраторов")
+        return
+    name = message.get_args()
+    print(name)
+    if not name:
+        await message.answer('Повтори попытку с названием через пробел', disable_web_page_preview=True)
+        return
+    link = tracker.generate_link(const.bot_name, name)
+    await message.answer(link, disable_web_page_preview=True)
 
 #
 #
