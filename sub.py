@@ -34,11 +34,12 @@ WHERE user_id = %s
 
 sql_get_sale_stats = '''
 SELECT 
-    SUM(tariff_1_month) AS sales_1_month,
-    SUM(tariff_3_months) AS sales_3_months,
-    SUM(tariff_12_months) AS sales_12_months,
-    SUM(total_sales) AS total_sales
+    COALESCE(SUM(tariff_1_month), 0) AS sales_1_month,
+    COALESCE(SUM(tariff_3_months), 0) AS sales_3_months,
+    COALESCE(SUM(tariff_12_months), 0) AS sales_12_months,
+    COALESCE(SUM(total_sales), 0) AS total_sales
 FROM sales_stat;
+
 '''
 
 
