@@ -58,14 +58,16 @@ async def admin_command(message: types.Message):
         await message.reply(f"Данная команда только для администраторов")
         logger.info(f"ADMIN COMMAND - /free, User - {telegram_id} ,НЕТ ПРАВ ДЛЯ ДАННОЙ КОМАНДЫ")
         return
-    answer = f"""/get_logs - получить все логи(для прогера) \n\n
-/all_users - количество всех пользователей\n\n
-/promo_info - отчет по промокодам\n\n
-/admin - ваши команды\n\n
-/promo -создать промокод, например"/promo PROMO 30", где "PROMO"-промокод, "30"-дни\n\n
-/user - инфо об юзере, например /user @byshakirov или по id /user 502811372 \n\n
-/clear_promo - удаляет использованные и просроченные промокоды \n\n
-/create_links - создать ссылку, через пробел название \n\n"""
+    answer = f"""/get_logs - получить все логи(для прогера) \n
+/all_users - количество всех пользователей\n
+/promo_info - отчет по промокодам\n
+/admin - ваши команды\n
+/promo -создать промокод, например"/promo PROMO 30", где "PROMO"-промокод, "30"-дни\n
+/user - инфо об юзере, например /user @byshakirov или по id /user 502811372 \n
+/clear_promo - удаляет использованные и просроченные промокоды \n
+/create_links - создать ссылку, через пробел название \n
+/stats -просмотр статистики \n\n
+"""
 
 
     await message.reply(answer)
@@ -104,9 +106,7 @@ async def user_info_command(message: types.Message):
         return
     if argument[0] == '@':
         user_name = argument[1::]
-        print(user_name)
         user_info = user_data.get_user_info(user_name=user_name)
-        print(user_info)
         await message.answer(user_info, parse_mode='HTML',
                              disable_web_page_preview=True)
         return
@@ -123,7 +123,6 @@ async def clear_promo_command(message: types.Message):
         await message.reply("Данная команда только для администраторов")
         return
     result = promo.clear_used_promo()
-    print(result)
     answer = "Использованные или просроченные промокоды удалены"
     await message.answer(answer, disable_web_page_preview=True)
 
@@ -134,7 +133,6 @@ async def create_links(message: types.Message):
         await message.reply("Данная команда только для администраторов")
         return
     name = message.get_args()
-    print(name)
     if not name:
         await message.answer('Повтори попытку с названием через пробел', disable_web_page_preview=True)
         return
@@ -146,10 +144,7 @@ async def create_links(message: types.Message):
     if message.from_user.id not in admins:
         await message.reply("Данная команда только для администраторов")
         return
-
-    link = "http://127.0.0.1:5000"
-
-    await message.answer(link, disable_web_page_preview=True)
+    await message.answer(const.link_stat, disable_web_page_preview=True)
 
 #
 #

@@ -111,4 +111,15 @@ def increment_tariff_sale(tariff):
 
 
 def get_sale_stats():
-    return get_conn.execute_query(sql_get_sale_stats)
+    result = get_conn.execute_query(sql_get_sale_stats)
+    return result
+
+
+def sale_paracent(stats):
+    m_all = int(stats[0][3])
+
+    m_1 = int(stats[0][0]) / m_all * 100
+    m_3 = int(stats[0][1]) / m_all * 100
+    m_12 = int(stats[0][2]) / m_all * 100
+
+    return m_1, m_3, m_12, m_all

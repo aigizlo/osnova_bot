@@ -288,5 +288,4 @@ def show_user_data():
 def show_links_info():
     sql = """select link, link_name, clicks from links"""
     result = get_conn.execute_query(sql)
-    print(result)
     return result

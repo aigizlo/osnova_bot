@@ -154,27 +154,3 @@ GROUP BY
 ORDER BY
     referral_count DESC;"""
 
-
-
-# SELECT
-#          u.user_id,
-#     ->     u.username,
-#     ->     COUNT(r.user_id) AS referral_count,
-#     ->     COALESCE(SUM(b.amount), 0) AS balance,
-#     ->     s.is_active AS subscription,
-#     ->     MAX(s.start_date) AS start_date,
-#     ->     MAX(s.stop_date) AS stop_date
-#     -> FROM
-#     ->     users u
-#     -> LEFT JOIN
-#     ->     users r ON u.user_id = r.referer_id
-#     -> LEFT JOIN
-#     ->     (SELECT user_id, SUM(amount) as amount
-#     ->      FROM balance
-#     ->      GROUP BY user_id) b ON u.user_id = b.user_id
-#     -> LEFT JOIN
-#     ->     subscriptions s ON u.user_id = s.user_id AND s.is_active = 1
-#     -> GROUP BY
-#     ->     u.user_id, u.username
-#     -> ORDER BY
-#     ->     referral_count DESC

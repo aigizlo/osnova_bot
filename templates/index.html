@@ -37,13 +37,19 @@
         <tbody>
             {% for sale_stat in sale_stats %}
             <tr>
-                <td>{{ sale_stat[0] }}</td>
-                <td>{{ sale_stat[1] }}</td>
-                <td>{{ sale_stat[2] }}</td>
-                <td>{{ sale_stat[3] }}</td>
+                <td> {{sale_stat[0]}} Продаж <br>
+    {{ "{:.1f}%".format(sale_stat[0]/sale_stat[3] * 100) }}</td>
+
+                <td> {{sale_stat[1]}} Продаж <br>
+    {{ "{:.1f}%".format(sale_stat[1]/sale_stat[3] * 100) }}</td>
+                <td> {{sale_stat[2]}} Продаж <br>
+    {{ "{:.1f}%".format(sale_stat[2]/sale_stat[3] * 100) }}</td>
+                <td>{{ sale_stat[3]}}</td>
             </tr>
             {% endfor %}
+
         </tbody>
+
     </table>
 
     <h1>Прибыль</h1>
@@ -59,10 +65,13 @@
         <tbody>
             {% for sale_stat in sale_stats %}
             <tr>
-                <td>{{ sale_stat[0] * 15 }}</td>
-                <td>{{ sale_stat[1] * 40}}</td>
-                <td>{{ sale_stat[2] * 150 }}</td>
-                <td>{{ sale_stat[0] * 15 +  sale_stat[1] * 40 + sale_stat[2] * 150 }}</td>
+                <td>{{ sale_stat[0] * 15 }} $ <br>
+                {{ "{:.1f}%".format(sale_stat[0] * 15 / (sale_stat[0] * 15 +  sale_stat[1] * 40 + sale_stat[2] * 150) * 100) }}</td>
+                <td>{{ sale_stat[1] * 40}} $ <br>
+                {{ "{:.1f}%".format(sale_stat[1] * 40 / (sale_stat[0] * 15 +  sale_stat[1] * 40 + sale_stat[2] * 150) * 100) }}</td></td>
+                <td>{{ sale_stat[2] * 150}} $ <br>
+                {{ "{:.1f}%".format(sale_stat[2] * 40 / (sale_stat[0] * 15 +  sale_stat[1] * 40 + sale_stat[2] * 150) * 100) }}</td></td>
+                <td>{{ sale_stat[0] * 15 +  sale_stat[1] * 40 + sale_stat[2] * 150 }} $</td>
             </tr>
             {% endfor %}
         </tbody>
