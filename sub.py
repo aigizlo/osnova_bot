@@ -116,14 +116,14 @@ def get_sale_stats():
 
 
 def sale_paracent(stats):
-    m_all = sum(int(stat[0]) for stat in stats)
 
+    m_all = int(stats[0][3])
     if m_all == 0:
-        return [0, 0, 0]  # или другое значение по умолчанию
+        return 0, 0, 0, 0
 
-    m_1 = (int(stats[0][0]) / m_all * 100) if m_all > 0 else 0
-    m_3 = (int(stats[1][0]) / m_all * 100) if m_all > 0 else 0
-    m_12 = (int(stats[2][0]) / m_all * 100) if m_all > 0 else 0
+    m_1 = int(stats[0][0]) / m_all * 100
 
-    return [round(m_1, 2), round(m_3, 2), round(m_12, 2)]
+    m_3 = int(stats[0][1]) / m_all * 100
+    m_12 = int(stats[0][2]) / m_all * 100
 
+    return m_1, m_3, m_12, m_all

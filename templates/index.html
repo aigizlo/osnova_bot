@@ -34,21 +34,41 @@
                 <th>Общее</th>
             </tr>
         </thead>
-        <tbody>
-            {% for sale_stat in sale_stats %}
-            <tr>
-                <td> {{sale_stat[0]}} Продаж <br>
-    {{ "{:.1f}%".format(sale_stat[0]/sale_stat[3] * 100) }}</td>
+<tbody>
+    {% for sale_stat in sale_stats %}
+    <tr>
+        <td>
+            {{ sale_stat[0] }} Продаж <br>
+            {% if sale_stat[3] != 0 %}
+                {{ "{:.1f}%".format(sale_stat[0] / sale_stat[3] * 100) }}
+            {% else %}
+                N/A
+            {% endif %}
+        </td>
 
-                <td> {{sale_stat[1]}} Продаж <br>
-    {{ "{:.1f}%".format(sale_stat[1]/sale_stat[3] * 100) }}</td>
-                <td> {{sale_stat[2]}} Продаж <br>
-    {{ "{:.1f}%".format(sale_stat[2]/sale_stat[3] * 100) }}</td>
-                <td>{{ sale_stat[3]}}</td>
-            </tr>
-            {% endfor %}
+        <td>
+            {{ sale_stat[1] }} Продаж <br>
+            {% if sale_stat[3] != 0 %}
+                {{ "{:.1f}%".format(sale_stat[1] / sale_stat[3] * 100) }}
+            {% else %}
+                N/A
+            {% endif %}
+        </td>
 
-        </tbody>
+        <td>
+            {{ sale_stat[2] }} Продаж <br>
+            {% if sale_stat[3] != 0 %}
+                {{ "{:.1f}%".format(sale_stat[2] / sale_stat[3] * 100) }}
+            {% else %}
+                N/A
+            {% endif %}
+        </td>
+
+        <td>{{ sale_stat[3] }}</td>
+    </tr>
+    {% endfor %}
+</tbody>
+
 
     </table>
 
@@ -65,16 +85,37 @@
         <tbody>
             {% for sale_stat in sale_stats %}
             <tr>
+                {% set total = sale_stat[0] * 15 + sale_stat[1] * 40 + sale_stat[2] * 150 %}
+
                 <td>{{ sale_stat[0] * 15 }} $ <br>
-                {{ "{:.1f}%".format(sale_stat[0] * 15 / (sale_stat[0] * 15 +  sale_stat[1] * 40 + sale_stat[2] * 150) * 100) }}</td>
-                <td>{{ sale_stat[1] * 40}} $ <br>
-                {{ "{:.1f}%".format(sale_stat[1] * 40 / (sale_stat[0] * 15 +  sale_stat[1] * 40 + sale_stat[2] * 150) * 100) }}</td></td>
-                <td>{{ sale_stat[2] * 150}} $ <br>
-                {{ "{:.1f}%".format(sale_stat[2] * 40 / (sale_stat[0] * 15 +  sale_stat[1] * 40 + sale_stat[2] * 150) * 100) }}</td></td>
-                <td>{{ sale_stat[0] * 15 +  sale_stat[1] * 40 + sale_stat[2] * 150 }} $</td>
+                {% if total != 0 %}
+                    {{ "{:.1f}%".format(sale_stat[0] * 15 / total * 100) }}
+                {% else %}
+                    N/A
+                {% endif %}
+                </td>
+
+                <td>{{ sale_stat[1] * 40 }} $ <br>
+                {% if total != 0 %}
+                    {{ "{:.1f}%".format(sale_stat[1] * 40 / total * 100) }}
+                {% else %}
+                    N/A
+                {% endif %}
+                </td>
+
+                <td>{{ sale_stat[2] * 150 }} $ <br>
+                {% if total != 0 %}
+                    {{ "{:.1f}%".format(sale_stat[2] * 150 / total * 100) }}
+                {% else %}
+                    N/A
+                {% endif %}
+                </td>
+
+                <td>{{ total }} $</td>
             </tr>
             {% endfor %}
         </tbody>
+
     </table>
 
     <h1>Ссылки</h1>
