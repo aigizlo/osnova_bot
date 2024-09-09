@@ -105,6 +105,9 @@ async def process_start_command(message: types.Message, state: FSMContext):
         await bot.send_message(chat_id=user_id,
                                text=text.product,
                                reply_markup=keyboards.keyboard_period())
+        await bot.send_message(chat_id=user_id,
+                               text="Главное меню",
+                               reply_markup=keyboards.main_menu())
 
 
 
