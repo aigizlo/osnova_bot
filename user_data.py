@@ -221,7 +221,8 @@ def get_user_info(user_id=None, user_name=None):
     amount = user_info[3]
     if not amount:
         amount = 0
-    stop_date = user_info[4]
+    stop_date = user_info[4].strftime("%Y-%m-%d")
+    stop_date = sub.format_date_string(stop_date)
     is_active = user_info[5]
 
     text = f"Информация о пользователе:\n"
@@ -231,7 +232,7 @@ def get_user_info(user_id=None, user_name=None):
     else:
         text += f"Реферер: Нет\n"
     text += f"Баланс: {amount}\n"
-    text += f"Дата окончания подписки: {'Да' if stop_date else 'Нет'}\n"
+    text += f"Дата окончания подписки: {stop_date if stop_date else 'Нет'}\n"
     text += f"Активность подписки: {'Да' if is_active else 'Нет'}"
 
     return text

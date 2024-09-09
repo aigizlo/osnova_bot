@@ -8,7 +8,6 @@ import const
 
 from handlers.admin_command import create_promo
 from handlers.handlers import *
-import text
 from handlers.handlers_main_menu import *
 from aiogram import types
 
@@ -85,7 +84,6 @@ async def process_start_command(message: types.Message, state: FSMContext):
                                                f'По вашей ссылке зарегистрирован пользователь {first_name}, {last_name}, {user_name}')
                     except Exception as e:
                         logger.error('Ошибка', e)
-
             # Отправка основного сообщения (для новых и существующих пользователей)
             await bot.send_message(chat_id=user_id,
                                    text=text.product,
@@ -103,6 +101,9 @@ async def process_start_command(message: types.Message, state: FSMContext):
         hash_link = referer_user_id
         tracker.track_link(hash_link)
         logger.info(f'перешли по ссылке {hash_link}')
+        await bot.send_message(chat_id=user_id,
+                               text=text.product,
+                               reply_markup=keyboards.keyboard_period())
 
 
 

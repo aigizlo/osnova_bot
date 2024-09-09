@@ -6,6 +6,7 @@ from aiogram.dispatcher import FSMContext
 from logger import logger
 import sub
 import text
+import promo
 from config import support, dp, bot
 import keyboards
 from states import MyStates
@@ -35,11 +36,11 @@ async def select_promo_code(callback_query: types.CallbackQuery, state: FSMConte
 async def insert_promo_codes(message: types.Message, state: FSMContext):
     user_id = message.chat.id
     promo_code = message.text
-    is_promo_valid, promo_period = sub.check_promo_code(promo_code)
+    is_promo_valid, promo_period = promo.check_promo_code(promo_code)
     if is_promo_valid:
         sub_active, answer = sub.activate_or_renewal_subscription(user_id, promo_period)
         if sub_active:
-            sub.status_used_promo_code(user_id=user_id,
+            promo.status_used_promo_code(user_id=user_id,
                                        promo_code=promo_code)
             if answer:
                 await bot.send_message(user_id, answer)

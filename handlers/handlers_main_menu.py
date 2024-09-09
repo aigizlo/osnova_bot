@@ -33,8 +33,10 @@ async def my_keys_command(message: types.Message, state: FSMContext):
 async def my_keys_command(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     stop_date = sub.get_subscription_info(user_id)
+    print(stop_date)
     if stop_date:
         date_farmated = sub.format_date_string(stop_date)
+        print(date_farmated)
         txt_my_tarif_info = text.my_tarif_info(date_farmated)
         await bot.send_message(chat_id=user_id,
                                text=txt_my_tarif_info,

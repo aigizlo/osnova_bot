@@ -29,7 +29,7 @@ async def create_promo(message: types.Message):
     code = command_parts[0]
     period = command_parts[1]
     print('vs nen')
-    result, answer = sub.create_promo_code(code, int(period))
+    result, answer = promo.create_promo_code(code, int(period))
     if not result:
         await message.reply(answer)
         return
@@ -139,6 +139,16 @@ async def create_links(message: types.Message):
         await message.answer('Повтори попытку с названием через пробел', disable_web_page_preview=True)
         return
     link = tracker.generate_link(const.bot_name, name)
+    await message.answer(link, disable_web_page_preview=True)
+
+@dp.message_handler(commands=['stats'], state="*")
+async def create_links(message: types.Message):
+    if message.from_user.id not in admins:
+        await message.reply("Данная команда только для администраторов")
+        return
+
+    link = "http://127.0.0.1:5000"
+
     await message.answer(link, disable_web_page_preview=True)
 
 #
