@@ -22,6 +22,7 @@ tarif_info = """📚 Продукт: "ОСНОВА"
 @dp.message_handler(lambda message: message.text == '🗓 Тарифные планы', state='*')
 async def my_keys_command(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
+    delete_from_channel(user_id)
     await bot.send_message(chat_id=user_id,
                            text=tarif_info,
                            parse_mode="HTML",
@@ -29,10 +30,21 @@ async def my_keys_command(message: types.Message, state: FSMContext):
     logger.info(f'user - {user_id} - 🗓 Тарифные планы')
 
 
+async def delete_from_channel(user_id):
+    sub_info = sub.get_subscription_info(user_id)
+    if not sub_info:
+        try:
+            await bot.ban_chat_member(chat_id=const.channel_id, user_id=user_id)
+            logger.info(f'Пользователь {user_id} исключен из канала {const.channel_id}')
+        except Exception as e:
+            logger.error(f'Ошибка при исключении пользователя: {e}')
+
+
 @dp.message_handler(lambda message: message.text == '🗃 Моя подписка', state='*')
 async def my_keys_command(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     stop_date = sub.get_subscription_info(user_id)
+    await delete_from_channel(user_id)
     if stop_date:
         date_farmated = sub.format_date_string(stop_date)
         txt_my_tarif_info = text.my_tarif_info(date_farmated)
@@ -50,10 +62,10 @@ async def my_keys_command(message: types.Message, state: FSMContext):
         logger.info(f'user - {user_id} - 🗃 Моя подписка (нет подписки)')
 
 
-
 @dp.message_handler(lambda message: message.text == '🤝 Поддержка', state='*')
 async def my_keys_command(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
+    await delete_from_channel(user_id)
     answer = f'''🤝 Поддержка
 
     Написать в поддержку {config.support}'''
@@ -67,6 +79,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
 @dp.message_handler(lambda message: message.text == '👥 Реферальная программа', state='*')
 async def my_keys_command(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
+    await delete_from_channel(user_id)
     count_referrals = user_data.count_referrals(user_id)
     if not count_referrals:
         count_referrals = 0
@@ -89,6 +102,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
 @dp.message_handler(lambda message: message.text == 'Отзывы', state='*')
 async def my_keys_command(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
+    await delete_from_channel(user_id)
     txt = f'Перейти к отзывам - https://t.me/+862uftwCjA8wZmUy'
     await bot.send_message(chat_id=user_id,
                            text=txt,

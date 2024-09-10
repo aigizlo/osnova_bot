@@ -1,5 +1,5 @@
 import asyncio
-
+import const
 import aiogram
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -41,13 +41,16 @@ async def insert_promo_codes(message: types.Message, state: FSMContext):
         sub_active, answer = sub.activate_or_renewal_subscription(user_id, promo_period)
         if sub_active:
             promo.status_used_promo_code(user_id=user_id,
-                                       promo_code=promo_code)
+                                         promo_code=promo_code)
             if answer:
                 await bot.send_message(user_id, answer)
                 logger.info(f'user_id - {user_id} активировал промокод {promo_code} для продления на {promo_period} дней')
                 return
         await asyncio.sleep(1)
         await bot.send_message(user_id, text.text_buy_tarif, reply_markup=keyboards.accept_button())
+        member = await bot.get_chat_member(chat_id=const.channel_id, user_id=user_id)
+        if member.status == 'kicked':
+            await bot.unban_chat_member(chat_id=const.channel_id, user_id=user_id)
         logger.info(f'user_id - {user_id} Активировал промокод - {promo_code} для покупки на {promo_period} дней')
         logger.info(sub_active)
         await state.finish()

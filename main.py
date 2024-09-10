@@ -34,38 +34,6 @@ async def process_start_command(message: types.Message, state: FSMContext):
     referer_user_id = message.get_args()
     try:
         referer_user_id = int(referer_user_id)
-
-        sub_info = sub.get_subscription_info(user_id)
-        if not sub_info:
-            try:
-                await bot.ban_chat_member(chat_id=const.channel_id, user_id=user_id)
-                logger.info(f'Пользователь {user_id} исключен из канала {const.channel_id}')
-            except Exception as e:
-                logger.error(f'Ошибка при исключении пользователя: {e}')
-        else:
-            try:
-                # Сначала проверяем, забанен ли пользователь
-                try:
-                    member = await bot.get_chat_member(chat_id=const.channel_id, user_id=user_id)
-                    if member.status == 'kicked':
-                        await bot.unban_chat_member(chat_id=const.channel_id, user_id=user_id)
-                        logger.info(f'Пользователь {user_id} разбанен в канале {const.channel_id}')
-                except Exception as e:
-                    pass  # Пользователь не в канале, это нормально
-
-                # Генерируем пригласительную ссылку
-                invite_link = await bot.create_chat_invite_link(chat_id=const.channel_id)
-
-                # Отправляем пользователю приглашение
-                await bot.send_message(user_id, f"Вот ваша ссылка для входа в канал: {invite_link.invite_link}")
-                logger.info(f'Пользователь {user_id} приглашен в канал {const.channel_id}')
-
-            except ChatNotFound:
-                logger.error(f'Канал {const.channel_id} не найден')
-            except Exception as e:
-                logger.error(f'Ошибка при приглашении пользователя: {e}')
-
-        logger.info(f"Start command received from {user_id}, {user_name}, {first_name}")
         # Установка состояния
         await state.set_state(MyStates.select_period)
         try:
@@ -98,7 +66,8 @@ async def process_start_command(message: types.Message, state: FSMContext):
             await bot.send_message(config.err_send, error_message)
 
             logging.error(error_message)
-    except ValueError:
+    except Exception as e:
+        logger.info(f"Ссылка для трафика")
         hash_link = referer_user_id
         tracker.track_link(hash_link)
         logger.info(f'перешли по ссылке {hash_link}')
@@ -108,7 +77,6 @@ async def process_start_command(message: types.Message, state: FSMContext):
         await bot.send_message(chat_id=user_id,
                                text="Главное меню",
                                reply_markup=keyboards.main_menu())
-
 
 
 # def job_function():
