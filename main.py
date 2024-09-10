@@ -33,7 +33,10 @@ async def process_start_command(message: types.Message, state: FSMContext):
     last_name = message.from_user.last_name
     referer_user_id = message.get_args()
     try:
-        referer_user_id = int(referer_user_id)
+        try:
+            referer_user_id = int(referer_user_id)
+        except:
+            referer_user_id = None
         # Установка состояния
         await state.set_state(MyStates.select_period)
         try:
