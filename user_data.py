@@ -208,9 +208,7 @@ def get_user_info(user_id=None, user_name=None):
     if user_id:
         info = execute_query(sql_user_info_user_id, (user_id,))
     elif user_name:
-        print('мы тут')
         info = execute_query(sql_user_info_user_name, (user_name,))
-        print(info, ' info')
     if not info:
         return "Пользователь не найден"
 

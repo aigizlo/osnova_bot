@@ -100,7 +100,6 @@ async def select_pay_method(callback_query: types.CallbackQuery, state: FSMConte
 @dp.callback_query_handler(text="go_back", state="*")
 async def select_go_back_(callback_query: types.CallbackQuery, state: FSMContext):
     current_state = await state.get_state()
-    print(f"Current state before going back: {current_state}")
     await select_period(callback_query, state)
 
 

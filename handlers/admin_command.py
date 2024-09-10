@@ -15,8 +15,6 @@ import user_data
 async def create_promo(message: types.Message):
     command_parts = message.get_args().split()
     telegram_id = message.from_user.id
-    print('vs nen')
-
     if message.from_user.id not in admins:
         await message.reply(f"Данная команда только для администраторов")
         logger.info(f"ADMIN COMMAND - создать промокод, User - {telegram_id}, , НЕТ ПРАВ ДЛЯ ДАННОЙ КОМАНДЫ")
@@ -28,7 +26,6 @@ async def create_promo(message: types.Message):
         return
     code = command_parts[0]
     period = command_parts[1]
-    print('vs nen')
     result, answer = promo.create_promo_code(code, int(period))
     if not result:
         await message.reply(answer)
