@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import sys
+import io
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardRemove
 import user_data
@@ -8,6 +10,8 @@ from keyboards import *
 from config import dp, bot
 from admin_butons import *
 from states import GetuserInfo
+
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 
 
 @dp.message_handler(commands=['send_all'], state="*")
