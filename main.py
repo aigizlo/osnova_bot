@@ -64,16 +64,17 @@ async def process_start_command(message: types.Message, state: FSMContext):
                                            text="Главное меню",
                                            parse_mode="HTML",
                                            reply_markup=keyboards.main_menu())
+                    # Уведомляем админа о новеньком
+                    await bot.send_message(chat_id=config.admin,
+                                           text=f"INFO: NEW USER - tg: {user_id}, "
+                                                f"username: @{user_name}, "
+                                                f"first_name: {first_name}, "
+                                                f"last_name : {last_name}, "
+                                                f"referer: {referer_user_id}",
+                                           reply_markup=keyboards.keyboard_period())
             # Отправка основного сообщения (для новых и существующих пользователей)
             await bot.send_message(chat_id=user_id,
                                    text=text.product,
-                                   reply_markup=keyboards.keyboard_period())
-            await bot.send_message(chat_id=config.admin,
-                                   text=f"INFO: NEW USER - tg: {user_id}, "
-                                        f"username: @{user_name}, "
-                                        f"first_name: {first_name}, "
-                                        f"last_name : {last_name}, "
-                                        f"referer: {referer_user_id}",
                                    reply_markup=keyboards.keyboard_period())
 
         except Exception as e:
