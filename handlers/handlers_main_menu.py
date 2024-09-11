@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import aiogram
@@ -110,17 +111,41 @@ async def main_menu(message: types.Message):
                            reply_markup=keyboards.main_menu())
 
 
+# async def delete_from_channel(user_id):
+#     sub_info = sub.get_subscription_info(user_id)
+#     if not sub_info:
+#         try:
+#             await bot.ban_chat_member(chat_id=const.channel_id, user_id=user_id)
+#             logger.info(f'Пользователь {user_id} исключен из канала {const.channel_id}')
+#         except Exception as e:
+#             logger.error(f'Ошибка при исключении из канала пользователя: {e}')
+#
+#         try:
+#             await bot.ban_chat_member(chat_id=const.chat_id, user_id=user_id)
+#             logger.info(f'Пользователь {user_id} исключен из чата {const.channel_id}')
+#         except Exception as e:
+#             logger.error(f'Ошибка при исключении из чата пользователя: {e}')
 async def delete_from_channel(user_id):
     sub_info = sub.get_subscription_info(user_id)
     if not sub_info:
-        try:
-            await bot.ban_chat_member(chat_id=const.channel_id, user_id=user_id)
-            logger.info(f'Пользователь {user_id} исключен из канала {const.channel_id}')
-        except Exception as e:
-            logger.error(f'Ошибка при исключении из канала пользователя: {e}')
+        async def try_ban(chat_id, user_id, chat_type):
+            try:
+                await bot.ban_chat_member(chat_id=chat_id, user_id=user_id)
+                logger.info(f'Пользователь {user_id} исключен из {chat_type} {chat_id}')
+            except aiogram.utils.exceptions.ChatMigrated as e:
+                new_chat_id = e.migrate_to_chat_id
+                logger.info(f"{chat_type.capitalize()} был преобразован в супергруппу. Новый ID: {new_chat_id}")
+                await try_ban(new_chat_id, user_id, chat_type)
+            except aiogram.utils.exceptions.BadRequest as e:
+                if "user is an administrator" in str(e).lower():
+                    logger.error(f"Невозможно исключить администратора из {chat_type} {chat_id}")
+                else:
+                    logger.error(f'Ошибка при исключении из {chat_type}: {e}')
+            except Exception as e:
+                logger.error(f'Ошибка при исключении из {chat_type} пользователя: {e}')
 
-        try:
-            await bot.ban_chat_member(chat_id=const.chat_id, user_id=user_id)
-            logger.info(f'Пользователь {user_id} исключен из чата {const.channel_id}')
-        except Exception as e:
-            logger.error(f'Ошибка при исключении из чата пользователя: {e}')
+        # Попытка бана в канале
+        await try_ban(const.channel_id, user_id, "канала")
+
+        # Попытка бана в чате
+        await try_ban(const.chat_id, user_id, "чата")
