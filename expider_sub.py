@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import time
 
 from aiogram import Bot  # Correct import for Bot
 import const
@@ -16,7 +17,6 @@ SELECT user_id, duration_months
 FROM subscriptions
 WHERE stop_date <= NOW() + INTERVAL 2 DAY AND is_active = 1;
 """
-
 
 
 # корректируем дни, дней, день
@@ -60,10 +60,6 @@ async def send_notify():
             return
 
 
-
-
 if __name__ == '__main__':
     import asyncio
-    while True:
-        asyncio.run(send_notify())
-        await asyncio.sleep(60)
+    asyncio.run(send_notify())
