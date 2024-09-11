@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from config import dp, bot, admins
 from aiogram import types
 import sub

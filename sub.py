@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from get_conn import create_connection
 from logger import logger
 import mysql.connector

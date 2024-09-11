@@ -1,4 +1,5 @@
 from flask import Flask, render_template
+# -*- coding: utf-8 -*-
 import sub
 import user_data
 

@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 import const

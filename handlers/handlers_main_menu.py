@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import aiogram
 from aiogram import types
 from aiogram.dispatcher import FSMContext

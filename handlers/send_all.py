@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from aiogram.dispatcher import FSMContext
 from aiogram.types import ReplyKeyboardRemove
 import user_data
