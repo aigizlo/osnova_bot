@@ -63,7 +63,7 @@ async def admin_command(message: types.Message):
 /user - инфо об юзере, например /user @byshakirov или по id /user 502811372 \n
 /clear_promo - удаляет использованные и просроченные промокоды \n
 /create_links - создать ссылку, через пробел название \n
-/send_all -просмотр статистики \n
+/send_all - рассылка \n
 /stats -просмотр статистики \n\n
 """
 
