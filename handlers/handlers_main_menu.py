@@ -20,7 +20,6 @@ tarif_info = """📚 Продукт: "ОСНОВА"
 🚨 Оплачивая подписку, Вы принимаете условия Пользовательского соглашения и Политики конфиденциальности."""
 
 
-# мои ключи
 @dp.message_handler(lambda message: message.text == '🗓 Тарифные планы', state='*')
 async def my_keys_command(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
@@ -30,16 +29,6 @@ async def my_keys_command(message: types.Message, state: FSMContext):
                            parse_mode="HTML",
                            reply_markup=keyboards.keyboard_period())
     logger.info(f'user - {user_id} - Тарифные планы')
-
-
-async def delete_from_channel(user_id):
-    sub_info = sub.get_subscription_info(user_id)
-    if not sub_info:
-        try:
-            await bot.ban_chat_member(chat_id=const.channel_id, user_id=user_id)
-            logger.info(f'Пользователь {user_id} исключен из канала {const.channel_id}')
-        except Exception as e:
-            logger.error(f'Ошибка при исключении пользователя: {e}')
 
 
 @dp.message_handler(lambda message: message.text == '🗃 Моя подписка', state='*')
@@ -119,3 +108,19 @@ async def main_menu(message: types.Message):
                            text="Главное меню",
                            parse_mode="HTML",
                            reply_markup=keyboards.main_menu())
+
+
+async def delete_from_channel(user_id):
+    sub_info = sub.get_subscription_info(user_id)
+    if not sub_info:
+        try:
+            await bot.ban_chat_member(chat_id=const.channel_id, user_id=user_id)
+            logger.info(f'Пользователь {user_id} исключен из канала {const.channel_id}')
+        except Exception as e:
+            logger.error(f'Ошибка при исключении из канала пользователя: {e}')
+
+        try:
+            await bot.ban_chat_member(chat_id=const.chat_id, user_id=user_id)
+            logger.info(f'Пользователь {user_id} исключен из чата {const.channel_id}')
+        except Exception as e:
+            logger.error(f'Ошибка при исключении из чата пользователя: {e}')

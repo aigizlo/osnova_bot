@@ -48,9 +48,16 @@ async def insert_promo_codes(message: types.Message, state: FSMContext):
                 return
         await asyncio.sleep(1)
         await bot.send_message(user_id, text.text_buy_tarif, reply_markup=keyboards.accept_button())
-        member = await bot.get_chat_member(chat_id=const.channel_id, user_id=user_id)
-        if member.status == 'kicked':
+        member_channel = await bot.get_chat_member(chat_id=const.channel_id, user_id=user_id)
+        member_chat = await bot.get_chat_member(chat_id=const.chat_id, user_id=user_id)
+
+        if member_channel.status == 'kicked':
             await bot.unban_chat_member(chat_id=const.channel_id, user_id=user_id)
+            logger.info(f"Пользователь  {user_id} разбанен в канане")
+
+        if member_chat.status == 'kicked':
+            await bot.unban_chat_member(chat_id=const.channel_id, user_id=user_id)
+            logger.info(f"Пользователь  {user_id} разбанен в чате")
         logger.info(f'user_id - {user_id} Активировал промокод - {promo_code} для покупки на {promo_period} дней')
         logger.info(sub_active)
         await state.finish()

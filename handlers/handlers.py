@@ -144,7 +144,7 @@ async def select_go_back_(callback_query: types.CallbackQuery, state: FSMContext
 @dp.callback_query_handler(lambda c: c.data == "subscribe_check", state="*")
 async def select_subscribe_no_thanks(callback_query: types.CallbackQuery):
     user_id = callback_query.message.chat.id
-    chat_member = await bot.get_chat_member(chat_id=const.tg_channel,
+    chat_member = await bot.get_chat_member(chat_id=const.channel_id,
                                             user_id=user_id)
     logger.info(f"BUTTON:subscribe_check user - {user_id}")
     if chat_member.status in ["member", "administrator", "creator", "owner"]:
