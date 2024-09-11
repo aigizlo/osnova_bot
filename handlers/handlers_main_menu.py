@@ -22,12 +22,12 @@ tarif_info = """📚 Продукт: "ОСНОВА"
 @dp.message_handler(lambda message: message.text == '🗓 Тарифные планы', state='*')
 async def my_keys_command(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
-    delete_from_channel(user_id)
+    await delete_from_channel(user_id)
     await bot.send_message(chat_id=user_id,
                            text=tarif_info,
                            parse_mode="HTML",
                            reply_markup=keyboards.keyboard_period())
-    logger.info(f'user - {user_id} - 🗓 Тарифные планы')
+    logger.info(f'user - {user_id} - Тарифные планы')
 
 
 async def delete_from_channel(user_id):
@@ -52,14 +52,14 @@ async def my_keys_command(message: types.Message, state: FSMContext):
                                text=txt_my_tarif_info,
                                parse_mode="HTML",
                                reply_markup=keyboards.renewal_sub())
-        logger.info(f'user - {user_id} - 🗃 Моя подписка (до {stop_date})')
+        logger.info(f'user - {user_id} - Моя подписка (до {stop_date})')
     else:
         txt_my_tarif_info = text.my_tarif_info(stop_date)
         await bot.send_message(chat_id=user_id,
                                text=txt_my_tarif_info,
                                parse_mode="HTML",
                                reply_markup=keyboards.keyboard_period())
-        logger.info(f'user - {user_id} - 🗃 Моя подписка (нет подписки)')
+        logger.info(f'user - {user_id} - Моя подписка (нет подписки)')
 
 
 @dp.message_handler(lambda message: message.text == '🤝 Поддержка', state='*')
@@ -73,7 +73,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
     await bot.send_message(chat_id=user_id,
                            text=answer,
                            parse_mode='HTML')
-    logger.info(f'user_id - {user_id} - 🤝 Поддержка')
+    logger.info(f'user_id - {user_id} - Поддержка')
 
 
 @dp.message_handler(lambda message: message.text == '👥 Реферальная программа', state='*')
@@ -90,21 +90,30 @@ async def my_keys_command(message: types.Message, state: FSMContext):
         await bot.send_message(chat_id=user_id,
                                text=txt,
                                parse_mode='HTML')
-        logger.info(f'user_id - {user_id} - 👥 Реферальная программа')
+        logger.info(f'user_id - {user_id} - Реферальная программа')
         return
     txt = text.ref_link(user_id, const.bot_name, count_referrals, user_balance)
     await bot.send_message(chat_id=user_id,
                            text=txt,
                            parse_mode='HTML')
-    logger.info(f'user_id - {user_id} - 👥 Реферальная программа')
+    logger.info(f'user_id - {user_id} - Реферальная программа')
 
 
 @dp.message_handler(lambda message: message.text == 'Отзывы', state='*')
 async def my_keys_command(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     await delete_from_channel(user_id)
-    txt = f'Перейти к отзывам - https://t.me/+862uftwCjA8wZmUy'
+    txt = f'Перейти к отзывам - https://t.me/osnova_feedbackk'
     await bot.send_message(chat_id=user_id,
                            text=txt,
                            parse_mode='HTML')
-    logger.info(f'user_id - {user_id} - 👥 Реферальная программа')
+    logger.info(f'user_id - {user_id} - Отзывы')
+
+
+@dp.message_handler(commands=['menu'], state="*")
+async def main_menu(message: types.Message):
+    user_id = message.from_user.id
+    await bot.send_message(chat_id=user_id,
+                           text="Главное меню",
+                           parse_mode="HTML",
+                           reply_markup=keyboards.main_menu())

@@ -3,6 +3,8 @@ import asyncio
 import logging
 from aiogram import Dispatcher
 from aiogram.utils import executor
+
+from handlers.send_all import show_rassilka
 from links import tracker
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 import const
@@ -14,13 +16,12 @@ from aiogram import types
 
 from handlers.handlers_promo import select_promo_code
 from keyboards import set_default_commands
-# from keyboards.admin_buutons import set_default_commands
 from logger import logger
 import user_data
 import keyboards
 from aiogram.utils.exceptions import ChatNotFound
 
-
+show_rassilka
 select_promo_code
 create_promo
 scheduler = AsyncIOScheduler()
@@ -33,10 +34,12 @@ async def process_start_command(message: types.Message, state: FSMContext):
     last_name = message.from_user.last_name
     referer_user_id = message.get_args()
     try:
-        try:
-            referer_user_id = int(referer_user_id)
-        except:
+        if not referer_user_id.isdigit():
+            hash_link = referer_user_id
+            tracker.track_link(hash_link)
+            logger.info(f'перешли по отслеживаемой ссылке {hash_link}')
             referer_user_id = None
+
         # Установка состояния
         await state.set_state(MyStates.select_period)
         try:
@@ -56,13 +59,22 @@ async def process_start_command(message: types.Message, state: FSMContext):
                                                f'По вашей ссылке зарегистрирован пользователь {first_name}, {last_name}, {user_name}')
                     except Exception as e:
                         logger.error('Ошибка', e)
+
+                    await bot.send_message(chat_id=user_id,
+                                           text="Главное меню",
+                                           parse_mode="HTML",
+                                           reply_markup=keyboards.main_menu())
             # Отправка основного сообщения (для новых и существующих пользователей)
             await bot.send_message(chat_id=user_id,
                                    text=text.product,
                                    reply_markup=keyboards.keyboard_period())
-            await bot.send_message(chat_id=user_id,
-                                   text="Главное меню",
-                                   reply_markup=keyboards.main_menu())
+            await bot.send_message(chat_id=config.admin,
+                                   text=f"INFO: NEW USER - tg: {user_id}, "
+                                        f"username: @{user_name}, "
+                                        f"first_name: {first_name}, "
+                                        f"last_name : {last_name}, "
+                                        f"referer: {referer_user_id}",
+                                   reply_markup=keyboards.keyboard_period())
 
         except Exception as e:
             error_message = f"Ошибка при обработке команды start: {e}"
@@ -70,16 +82,8 @@ async def process_start_command(message: types.Message, state: FSMContext):
 
             logging.error(error_message)
     except Exception as e:
-        logger.info(f"Ссылка для трафика")
-        hash_link = referer_user_id
-        tracker.track_link(hash_link)
-        logger.info(f'перешли по ссылке {hash_link}')
-        await bot.send_message(chat_id=user_id,
-                               text=text.product,
-                               reply_markup=keyboards.keyboard_period())
-        await bot.send_message(chat_id=user_id,
-                               text="Главное меню",
-                               reply_markup=keyboards.main_menu())
+        logger.error(f"Ошибка {e}")
+
 
 
 # def job_function():

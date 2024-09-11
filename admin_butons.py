@@ -3,13 +3,13 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMar
 from aiogram import types
 
 
-# async def set_default_commands(dp):
-#     await dp.bot.set_my_commands(
-#         [
-#             types.BotCommand("start", "Запустить бота"),
-#             types.BotCommand("admin", "Меню администратора"),
-#         ]
-#     )
+async def set_default_commands(dp):
+    await dp.bot.set_my_commands(
+        [
+            types.BotCommand("start", "Запустить бота"),
+            types.BotCommand("menu", "Главное меню"),
+        ]
+    )
 
 
 adminpanelmenu = ReplyKeyboardMarkup(
@@ -18,7 +18,7 @@ adminpanelmenu = ReplyKeyboardMarkup(
     keyboard=[
         [
             KeyboardButton(text='С фото 🏞'),
-            KeyboardButton(text='С клавиатурой')
+            KeyboardButton(text='С видео 🎥')
         ],
         [
             KeyboardButton(text="Пропустить ➡️")
@@ -54,6 +54,28 @@ startposting = InlineKeyboardMarkup(
         [
             InlineKeyboardButton(text='Подтвердить',callback_data='startposting'),
             InlineKeyboardButton(text='Отменить',callback_data='cancelposting')
+        ]
+    ]
+)
+
+select_users = ReplyKeyboardMarkup(
+    row_width=2,
+    resize_keyboard=True,
+    keyboard=[
+        [
+            KeyboardButton(text='Всем'),
+            KeyboardButton(text='С подпиской'),
+            KeyboardButton(text='Без подписки')
+        ]
+    ]
+)
+
+dalee = ReplyKeyboardMarkup(
+    row_width=1,
+    resize_keyboard=True,
+    keyboard=[
+        [
+            KeyboardButton(text='Далее'),
         ]
     ]
 )

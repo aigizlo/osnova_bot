@@ -1,4 +1,3 @@
-import urllib3
 from aiogram import Bot, Dispatcher
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 import const
@@ -6,6 +5,8 @@ import const
 support = "@byshakirov"
 
 admin = 502811372
+
+admin_xheka = 328521044
 err_send = 502811372
 
 admins = [502811372, 328521044, 1139164093]

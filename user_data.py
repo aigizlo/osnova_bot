@@ -287,3 +287,31 @@ def show_links_info():
     sql = """select link, link_name, clicks from links"""
     result = get_conn.execute_query(sql)
     return result
+
+
+sql_get_user_id_have_sub = '''
+SELECT user_id FROM subscriptions WHERE is_active = 1;
+'''
+
+sql_get_user_id_have_not_sub = '''
+SELECT u.user_id
+FROM users u
+LEFT JOIN subscriptions s ON u.user_id = s.user_id AND s.is_active = 1
+WHERE s.user_id IS NULL OR s.is_active IS NULL
+GROUP BY u.user_id
+'''
+sql_get_users_ = '''
+SELECT user_id FROM users
+'''
+
+
+def get_user_id_have_not_sub():
+    return execute_query(sql_get_user_id_have_not_sub)
+
+
+def get_user_id_have_sub():
+    return execute_query(sql_get_user_id_have_sub)
+
+
+def get_all_users():
+    return execute_query(sql_get_users_)

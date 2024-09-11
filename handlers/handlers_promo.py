@@ -29,7 +29,7 @@ async def select_promo_code(callback_query: types.CallbackQuery, state: FSMConte
 
     await bot.send_message(chat_id=user_id, text=answer, reply_markup=keyboards.back_to_main_menu())
     await state.set_state(MyStates.insert_promo_code)
-    logger.info(f'user_id - {user_id} - 🎁 Применить промокод')
+    logger.info(f'user_id - {user_id} - Применить промокод')
 
 
 @dp.message_handler(state=MyStates.insert_promo_code)

@@ -191,4 +191,4 @@ async def select_renewal_sub(callback_query: types.CallbackQuery, state: FSMCont
                            # 3 месяц - 90 дней - 40 USD
                            # 12 месяц - 365 дней - 150 USD
                            reply_markup=keyboards.keyboard_period())
-    logger.info(f'user_id - {user_id} ✅Продлить подписку')
+    logger.info(f'user_id - {user_id} Продлить подписку')
