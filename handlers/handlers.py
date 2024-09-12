@@ -234,7 +234,7 @@ async def process_wallet(message: types.Message, state: FSMContext):
 
         add_withdrawal_request(user_id, float(balance), wallet)
 
-        await bot.send_message(config.admin, f"Заявка на вывод от пользователя {user_id} на сумму {balance}$\n"
+        await bot.send_message(const.admin, f"Заявка на вывод от пользователя {user_id} на сумму {balance}$\n"
                                              f"Отправьте средства решите заявку тут {const.link_stat}withdraw ", parse_mode="HTML")
         await message.reply("Спасибо! Ваш кошелек принят. Мы обработаем ваш запрос на вывод средств в течении 3-5 "
                             "рабочих дней.")

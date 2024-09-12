@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-
+from aiogram.utils.exceptions import MigrateToChat, BadRequest, ChatNotFound
 import aiogram
 from aiogram import types
 from aiogram.dispatcher import FSMContext
@@ -121,23 +121,6 @@ async def main_menu(message: types.Message):
                            reply_markup=keyboards.main_menu())
 
 
-# async def delete_from_channel(user_id):
-#     sub_info = sub.get_subscription_info(user_id)
-#     if not sub_info:
-#         try:
-#             await bot.ban_chat_member(chat_id=const.channel_id, user_id=user_id)
-#             logger.info(f'Пользователь {user_id} исключен из канала {const.channel_id}')
-#         except Exception as e:
-#             logger.error(f'Ошибка при исключении из канала пользователя: {e}')
-#
-#         try:
-#             await bot.ban_chat_member(chat_id=const.chat_id, user_id=user_id)
-#             logger.info(f'Пользователь {user_id} исключен из чата {const.channel_id}')
-#         except Exception as e:
-#             logger.error(f'Ошибка при исключении из чата пользователя: {e}')
-from aiogram.utils.exceptions import MigrateToChat, BadRequest, ChatNotFound
-
-
 async def delete_from_channel(user_id):
     sub_info = sub.get_subscription_info(user_id)
     if not sub_info:
@@ -145,8 +128,8 @@ async def delete_from_channel(user_id):
             try:
                 member_chat = await bot.get_chat_member(chat_id=const.chat_id, user_id=user_id)
                 logger.info(f'member_chat {member_chat.status}')
-                if member_chat.status == 'kicked':
-                    # await bot.ban_chat_member(chat_id=chat_id, user_id=user_id)
+                if member_chat.status != 'kicked':
+                    await bot.ban_chat_member(chat_id=chat_id, user_id=user_id)
                     logger.info(f'Пользователь {user_id} исключен из {chat_type} {chat_id}')
 
             except MigrateToChat as e:

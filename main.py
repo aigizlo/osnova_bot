@@ -3,6 +3,9 @@ import logging
 from aiogram import Dispatcher
 from aiogram.utils import executor
 
+import const
+import config
+
 from handlers.send_all import show_rassilka
 from links import tracker
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -67,7 +70,7 @@ async def process_start_command(message: types.Message, state: FSMContext):
                                            parse_mode="HTML",
                                            reply_markup=keyboards.main_menu())
                     # Уведомляем админа о новеньком
-                    await bot.send_message(chat_id=config.admin,
+                    await bot.send_message(chat_id=const.admin,
                                            text=f"INFO: NEW USER - tg: {user_id}, "
                                                 f"username: @{user_name}, "
                                                 f"first_name: {first_name}, "
