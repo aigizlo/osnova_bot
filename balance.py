@@ -2,12 +2,18 @@ from get_conn import create_connection
 from logger import logger
 import math
 import sub
-
+import user_data
 
 # sub.used_promo_code(user_id=12321312,promo_code='NEWPROMO2024')
 from user_data import execute_query
 
 
+# создаем заявку
+def add_withdrawal_request(user_id: int, amount: float, wallet: str):
+    user_data.execute_query('''
+    INSERT INTO withdrawal_requests (user_id, amount, status, wallet)
+    VALUES (%s, %s, %s, %s)
+    ''', (user_id, amount, 'pending', wallet))
 
 # # запрос для оплаты с реф баланса
 # sql_pay_from_bonus_query = """INSERT INTO user_balance_ops

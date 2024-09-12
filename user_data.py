@@ -80,11 +80,6 @@ sql_get_users = "SELECT telegram_id FROM users"
 
 slq_get_referrer_user_id = """SELECT referer_id FROM users WHERE user_id = %s"""
 
-sql_add_ref_balance = """
-    INSERT INTO balance (user_id, amount, transaction_type, description)
-    VALUES (%s, %s, 'referral', %s)
-    """
-
 
 def get_list_admins_telegram_id():
     sql_query = "SELECT telegram_id FROM users WHERE admin = 1"
@@ -112,9 +107,26 @@ def count_referrals(user_id):
         logger.error(f"QUERY_ERROR - count_referrals - {e}")
 
 
-def add_referral_balance(user_id, amount, description):
-    values = (user_id, amount, description)
-    execute_query(sql_add_ref_balance, values)
+sql_add_ref_balance = """
+    INSERT INTO balance (user_id, amount, transaction_type, description)
+    VALUES (%s, %s, 'referral', %s)
+    """
+
+
+def add_referral_balance(user_id, amount, description=None):
+    try:
+        values = (user_id, amount, description)
+        execute_query(sql_add_ref_balance, values)
+        if amount > 0:
+            logger.info(f"Баланс {amount}, начислен юзеру {user_id}")
+            return True, f"Баланс {amount}, начислен юзеру {user_id}"
+        else:
+            logger.info(f"Баланс {amount}, снят с юзера {user_id}")
+            return True, f"Баланс {amount}, снят с юзера {user_id}"
+
+    except Exception as e:
+        logger.error(f"Ошибка операции с балансом, {e}")
+        return False, f"Ошибка операции с балансом {e}"
 
 
 # def subcribe_info
@@ -316,3 +328,22 @@ def get_user_id_have_sub():
 
 def get_all_users():
     return execute_query(sql_get_users_)
+
+
+def get_status_withdraw(user_id):
+    sql = """
+    SELECT * FROM withdrawal_requests WHERE user_id = %s AND status = "pending";
+    """
+    result = execute_query(sql, (user_id,))
+
+    if result:
+        return result
+    else:
+        return False
+
+
+def delete_withdraw_request(user_id):
+    sql = """
+    DELETE FROM withdrawal_requests WHERE user_id = %s AND status = "pending";
+    """
+    execute_query(sql, (user_id,))

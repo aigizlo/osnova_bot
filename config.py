@@ -17,6 +17,9 @@ admins = [502811372, 328521044, 1139164093]
 bot = Bot(token=const.token)
 
 
+api_key = 'aQGMHPFdqsMLouM2K4Knws7IKKmGqyNrZ0QXTG8Z'
+
+
 storage = MemoryStorage()
 
 dp = Dispatcher(bot, storage=storage)

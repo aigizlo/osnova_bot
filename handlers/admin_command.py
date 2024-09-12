@@ -144,7 +144,33 @@ async def create_links(message: types.Message):
     if message.from_user.id not in admins:
         await message.reply("Данная команда только для администраторов")
         return
-    await message.answer(const.link_stat, disable_web_page_preview=True)
+    await message.answer(f"{const.link_stat}\n"
+                         f"Заявки на вывод - {const.link_stat}withdraw", disable_web_page_preview=True)
+
+
+@dp.message_handler(commands=['add_balance'], state="*")
+async def create_promo(message: types.Message):
+    command_parts = message.get_args().split()
+    telegram_id = message.from_user.id
+    if message.from_user.id not in admins:
+        await message.reply(f"Данная команда только для администраторов")
+        logger.info(f"ADMIN COMMAND - add_balance, User - {telegram_id}, , НЕТ ПРАВ ДЛЯ ДАННОЙ КОМАНДЫ")
+        return
+
+    elif len(command_parts) != 2:
+        await message.reply("Неверное количество аргументов, пример - создать промокод MYPROMO 30")
+        logger.info(f"ADMIN COMMAND - /add_balance, User - {telegram_id}, Неверное количество аргументов")
+        return
+    amount = command_parts[0]
+    user_id = command_parts[1]
+    result, answer = user_data.add_referral_balance(int(user_id), int(amount),)
+    if not result:
+        await message.reply(answer)
+        return
+    await message.reply(answer)
+    # await message.reply(answer)
+    logger.info(f"ADMIN_COMMANDS /add_balance,  , admin - {message.from_user.id}")
+
 
 #
 #

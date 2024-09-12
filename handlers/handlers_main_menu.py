@@ -36,6 +36,17 @@ async def my_keys_command(message: types.Message, state: FSMContext):
 async def my_keys_command(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
     stop_date = sub.get_subscription_info(user_id)
+    member_channel = await bot.get_chat_member(chat_id=const.channel_id, user_id=user_id)
+    member_chat = await bot.get_chat_member(chat_id=const.chat_id, user_id=user_id)
+
+    if member_channel.status == 'kicked':
+        await bot.unban_chat_member(chat_id=const.channel_id, user_id=user_id)
+        logger.info(f"Пользователь  {user_id} разбанен в канане")
+
+    if member_chat.status == 'kicked':
+        await bot.unban_chat_member(chat_id=const.chat_id, user_id=user_id)
+        logger.info(f"Пользователь  {user_id} разбанен в чате")
+
     await delete_from_channel(user_id)
     if stop_date:
         date_farmated = sub.format_date_string(stop_date)
@@ -76,18 +87,17 @@ async def my_keys_command(message: types.Message, state: FSMContext):
     if not count_referrals:
         count_referrals = 0
     user_balance = user_data.get_user_balance_bonus(user_id)
-    sub_info = sub.get_subscription_info(user_id)
-    if not sub_info:
-        txt = text.not_ref_link(count_referrals, user_balance)
+    txt = text.ref_link(user_id, const.bot_name, count_referrals, user_balance)
+    if user_balance >= 50:
+        await bot.send_message(chat_id=user_id,
+                               text=txt,
+                               parse_mode='HTML',
+                               reply_markup=keyboards.withdraw())
+    else:
         await bot.send_message(chat_id=user_id,
                                text=txt,
                                parse_mode='HTML')
-        logger.info(f'user_id - {user_id} - Реферальная программа')
-        return
-    txt = text.ref_link(user_id, const.bot_name, count_referrals, user_balance)
-    await bot.send_message(chat_id=user_id,
-                           text=txt,
-                           parse_mode='HTML')
+
     logger.info(f'user_id - {user_id} - Реферальная программа')
 
 
@@ -127,13 +137,18 @@ async def main_menu(message: types.Message):
 #             logger.error(f'Ошибка при исключении из чата пользователя: {e}')
 from aiogram.utils.exceptions import MigrateToChat, BadRequest, ChatNotFound
 
+
 async def delete_from_channel(user_id):
     sub_info = sub.get_subscription_info(user_id)
     if not sub_info:
         async def try_ban(chat_id, user_id, chat_type):
             try:
-                await bot.ban_chat_member(chat_id=chat_id, user_id=user_id)
-                logger.info(f'Пользователь {user_id} исключен из {chat_type} {chat_id}')
+                member_chat = await bot.get_chat_member(chat_id=const.chat_id, user_id=user_id)
+                logger.info(f'member_chat {member_chat.status}')
+                if member_chat.status == 'kicked':
+                    # await bot.ban_chat_member(chat_id=chat_id, user_id=user_id)
+                    logger.info(f'Пользователь {user_id} исключен из {chat_type} {chat_id}')
+
             except MigrateToChat as e:
                 new_chat_id = e.migrate_to_chat_id
                 logger.info(f"{chat_type.capitalize()} был преобразован в супергруппу. Новый ID: {new_chat_id}")

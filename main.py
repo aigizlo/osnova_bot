@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import asyncio
 import logging
 from aiogram import Dispatcher
@@ -7,7 +6,6 @@ from aiogram.utils import executor
 from handlers.send_all import show_rassilka
 from links import tracker
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-import const
 
 from handlers.admin_command import create_promo
 from handlers.handlers import *
@@ -19,12 +17,12 @@ from keyboards import set_default_commands
 from logger import logger
 import user_data
 import keyboards
-from aiogram.utils.exceptions import ChatNotFound
 
 show_rassilka
 select_promo_code
 create_promo
-scheduler = AsyncIOScheduler()
+scheduler = AsyncIOScheduler
+
 
 @dp.message_handler(commands=['start'], state="*")
 async def process_start_command(message: types.Message, state: FSMContext):
@@ -33,6 +31,7 @@ async def process_start_command(message: types.Message, state: FSMContext):
     first_name = message.from_user.first_name
     last_name = message.from_user.last_name
     referer_user_id = message.get_args()
+    logger.info(f'{referer_user_id}, referer_user_id')
     try:
         if not referer_user_id.isdigit():
             hash_link = referer_user_id
@@ -53,10 +52,13 @@ async def process_start_command(message: types.Message, state: FSMContext):
 
                 logging.info(f"INFO: NEW USER - tg: {user_id}, user_id: {new_user}, "
                              f"username: {user_name}, referer: {referer_user_id}")
+
                 if referer_user_id:
                     try:
-                        await bot.send_message(referer_user_id,
-                                               f'По вашей ссылке зарегистрирован пользователь {first_name}, {last_name}, {user_name}')
+                        txt = text.ref_send_if_reg(first_name, last_name, user_name)
+                        logger.info(txt)
+                        logger.info('----------------------')
+                        await bot.send_message(referer_user_id, txt, parse_mode="HTML")
                     except Exception as e:
                         logger.error('Ошибка', e)
 
@@ -86,7 +88,6 @@ async def process_start_command(message: types.Message, state: FSMContext):
         logger.error(f"Ошибка {e}")
 
 
-
 # def job_function():
 #     get_expired_keys_info()
 
@@ -108,8 +109,6 @@ if __name__ == '__main__':
 
     executor.start_polling(dp, on_startup=on_startup, skip_updates=False)
     logger.info('Бот запущен')
-
-
 
 """SELECT
     u.user_id,
@@ -133,4 +132,3 @@ GROUP BY
     u.user_id, u.username
 ORDER BY
     referral_count DESC;"""
-

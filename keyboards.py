@@ -10,6 +10,7 @@ async def set_default_commands(dp):
         ]
     )
 
+
 # кнопка Назад
 def main_menu():
     keyboard = types.ReplyKeyboardMarkup(resize_keyboard=True)
@@ -112,5 +113,28 @@ def renewal_sub():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(
         types.InlineKeyboardButton("""✅Продлить подписку""", callback_data='renewal_sub')
+    )
+    return keyboard
+
+
+def withdraw():
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard.add(
+        types.InlineKeyboardButton("Вывести средства", callback_data="withdraw_money")
+    )
+    return keyboard
+
+
+def cansel_withdraw():
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard.add(
+        types.InlineKeyboardButton("Отменить вывод", callback_data="withdraw_cancel")
+    )
+    return keyboard
+
+def cansel_withdraw_requests():
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard.add(
+        types.InlineKeyboardButton("Отменить", callback_data="cancel")
     )
     return keyboard

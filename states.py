@@ -40,6 +40,9 @@ class MyStates(FSMContext):
     # выбор оплаты
     state_key_for_renewal_1 = 'state_key_for_renewal_1'
 
+    waiting_for_wallet = "waiting_for_wallet"
+
+
 
     # balance
     state_balance = "state_balance"
