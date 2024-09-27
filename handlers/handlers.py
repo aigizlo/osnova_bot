@@ -145,15 +145,15 @@ async def select_pay_method(callback_query: types.CallbackQuery, state: FSMConte
                            reply_markup=keyboards.check_status_payment())
 
 
-@dp.callback_query_handler(lambda c: c.data.startswith("check_status_payment"), state='*')
+@dp.callback_query_handler(lambda c: c.data.startswith('check_status_payment'), state='*')
 async def select_check_status_payment(callback_query: types.CallbackQuery, state: FSMContext):
     logger.info('check_status_payment')
 
     user_data_state = await state.get_data()
-    user_id = callback_query.message.chat.id
-    user_name = callback_query.message.from_user.username
-    first_name = callback_query.message.from_user.first_name
-    last_name = callback_query.message.from_user.last_name
+    user_id = callback_query.from_user.id
+    user_name = callback_query.from_user.username
+    first_name = callback_query.from_user.first_name
+    last_name = callback_query.from_user.last_name
 
 
     ref_data = user_data.get_user_name_frst_name_last_name(user_id)

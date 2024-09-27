@@ -38,25 +38,6 @@ def create_payment_link(amount, order_id, description):
         "OrderId": order_id,
         "Description": description,
         "Token": token,
-        "DATA": {
-            "Phone": "+71234567890",  # Опционально
-            "Email": "a@test.com"  # Опционально
-            },
-        "Receipt": {
-            "Email": "a@test.ru",
-            "Phone": "+79031234567",
-            "Taxation": "osn",
-            "Items": [
-                {
-                    "Name": "Наименование товара 1",
-                    "Price": amount,
-                    "Quantity": 1,
-                    "Amount": amount,
-                    "Tax": "vat10",
-                    "Ean13": "303130323930303030630333435"
-                },
-            ]
-        }
     }
 
     headers = {
