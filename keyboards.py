@@ -71,10 +71,10 @@ def go_to_pay():
     return keyboard
 
 
-def select_card_or_usdt():
+def select_card_or_usdt(url_link_pay):
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(
-        types.InlineKeyboardButton("Оплатить картой", callback_data=f"card_pay"),
+        types.InlineKeyboardButton("Оплатить картой", url=url_link_pay),
         types.InlineKeyboardButton("USTD (trc2-)", callback_data=f"usdt_pay"),
         types.InlineKeyboardButton("⬅️ Назад", callback_data=f"go_back_to_main"),
     )
@@ -85,6 +85,14 @@ def back_to_main_menu():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(
         types.InlineKeyboardButton("⬅️ Назад", callback_data="go_back_to_main")
+    )
+    return keyboard
+
+
+def check_status_payment():
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard.add(
+        types.InlineKeyboardButton("Я оплатил(а)", callback_data="check_status_payment")
     )
     return keyboard
 

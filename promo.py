@@ -4,6 +4,8 @@ from logger import logger
 import mysql.connector
 import get_conn
 from datetime import datetime, timedelta
+import random
+import string
 
 sql_check_promo_code = """
 SELECT period, used, create_date FROM promo_codes 
@@ -67,13 +69,40 @@ def clear_used_promo():
     get_conn.execute_query(sql_procrochka)
 
 
-
 def create_promo_code(code, period):
     result = get_conn.execute_query(sql_check_promo_codes, (code,))
     if result:
         return False, "Такой промокод уже есть"
     get_conn.execute_query(sql_new_promo_code, (code, period))
-    return True, "Промокод успешно создан"
+    sql_lst_promo_id = 'SELECT MAX(promo_id) FROM promo_codes;'
+    promo_id = get_conn.execute_query(sql_lst_promo_id)
+    logger.info(promo_id)
+    logger.info('-------------============')
+    return promo_id[0][0], "Промокод успешно создан"
+
+
+def generate_promo_code(period):
+    letters = string.ascii_letters
+    result = False
+    while not result:
+        promo_code = ''.join(random.choice(letters) for _ in range(5))
+        promo_id = create_promo_code(promo_code, period)
+        if promo_id:
+            break
+    return promo_code, promo_id
+
+
+def get_promo_id_from_transactions(pay_id):
+    sql = """
+    SELECT pc.promo_id, pc.code, period
+    FROM transactions t
+    JOIN promo_codes pc ON t.promo_id = pc.promo_id
+    WHERE t.transaction_id= %s"""
+    promo_id = get_conn.execute_query(sql, (pay_id,))
+    if promo_id:
+        return promo_id[0]
+    else:
+        False
 
 
 def generate_promo_code_report():

@@ -14,9 +14,10 @@ bot = Bot(token=const.token)
 
 # запрос для получения ключей которые скоро истекут
 sql_get_expired_sub_2days = """
-SELECT user_id, duration_months
+SELECT user_id
 FROM subscriptions
-WHERE stop_date <= NOW() + INTERVAL 2 DAY AND is_active = 1;
+WHERE DATE(stop_date) = DATE(NOW() + INTERVAL 2 DAY)
+AND is_active = 1;
 """
 
 
@@ -58,7 +59,6 @@ async def send_notify_exrpd():
                                text=f"Ошибка при отправке уведомлений и об истекающих подписках - {e}")
 
 
-# запрос для получения ключей которые скоро истекут
 sql_get_user_id_Xday_ago_registration = """SELECT u.user_id FROM users u LEFT JOIN (     SELECT user_id, MAX(subscription_id) as 
 last_sub_id     FROM subscriptions     GROUP BY user_id ) last_sub ON u.user_id = last_sub.user_id LEFT JOIN 
 subscriptions s ON last_sub.last_sub_id = s.subscription_id WHERE DATE(u.data) = DATE(NOW() - INTERVAL %s DAY)   AND (

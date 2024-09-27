@@ -3,8 +3,6 @@ import logging
 from aiogram import Dispatcher
 from aiogram.utils import executor
 
-import const
-import config
 
 from handlers.send_all import show_rassilka
 from links import tracker

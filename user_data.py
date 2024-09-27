@@ -129,7 +129,24 @@ def add_referral_balance(user_id, amount, description=None):
         return False, f"Ошибка операции с балансом {e}"
 
 
-# def subcribe_info
+def referral_transactions(user_id, amount):
+    amount = float(amount)
+    # Cначала узнаем есть ли реферер у юзера
+    sql_get_referer_user_id = """
+    SELECT referer_id FROM users WHERE user_id = %s;
+    """
+    result = execute_query(sql_get_referer_user_id, (user_id,))
+    if not result[0][0]:
+        return False
+
+    referer_id = result[0][0]
+
+    amount = amount/3/10000
+
+    result = add_referral_balance(referer_id, float(amount), "Реферальные начисления")
+
+    return result
+
 
 
 def get_user_balance_bonus(user_id):
@@ -141,6 +158,8 @@ def get_user_balance_bonus(user_id):
     except Exception as e:
         logger.error(f"QUERY_ERROR - get_user_balance_bonus - {e}")
 
+
+print(get_user_balance_bonus(1139164093))
 
 def get_referrer_user_id(user_id):
     try:
@@ -171,17 +190,17 @@ def all_users():
     return result[0][0]
 
 
-# def searche_user_id_with_user_name(user_name):
-#     try:
-#         query = """SELECT user_id FROM users WHERE username = %s"""
-#         result = execute_query(query, (user_name,))
-#         if result:
-#             return result[0][0]
-#         else:
-#             return None
-#     except Exception as e:
-#         logger.error(f"QUERY_ERROR - searche_with_usr_name - {e}")
-#         return None
+def get_user_name_frst_name_last_name(user_id):
+    try:
+        query = """SELECT first_name, lastname,username FROM users WHERE user_id = %s"""
+        result = execute_query(query, (user_id,))
+        if result:
+            return result[0]
+        else:
+            return None
+    except Exception as e:
+        logger.error(f"QUERY_ERROR - searche_with_usr_name - {e}")
+        return None
 
 
 sql_user_info_user_id = '''SELECT 

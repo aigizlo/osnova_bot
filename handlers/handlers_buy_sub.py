@@ -24,7 +24,7 @@ async def select_promo_code(callback_query: types.CallbackQuery, state: FSMConte
         logger.info("Сообщение не может быть удалено.")
 
     answer = f"""📚 Продукт: "ОСНОВА"
-    
+
     Введите ваш промокод:"""
 
     await bot.send_message(chat_id=user_id, text=answer, reply_markup=keyboards.back_to_main_menu())
@@ -44,9 +44,11 @@ async def insert_promo_codes(message: types.Message, state: FSMContext):
                                          promo_code=promo_code)
             if answer:
                 await bot.send_message(user_id, answer)
-                logger.info(f'user_id - {user_id} активировал промокод {promo_code} для продления на {promo_period} дней')
+                logger.info(
+                    f'user_id - {user_id} активировал промокод {promo_code} для продления на {promo_period} дней')
                 return
         await asyncio.sleep(1)
+        await bot.send_message(user_id, text.text_buy_tarif, reply_markup=keyboards.accept_button(), parse_mode="HTML")
         member_channel = await bot.get_chat_member(chat_id=const.channel_id, user_id=user_id)
         member_chat = await bot.get_chat_member(chat_id=const.chat_id, user_id=user_id)
 
@@ -58,7 +60,6 @@ async def insert_promo_codes(message: types.Message, state: FSMContext):
             await bot.unban_chat_member(chat_id=const.chat_id, user_id=user_id)
             logger.info(f"Пользователь  {user_id} разбанен в чате")
         logger.info(f'user_id - {user_id} Активировал промокод - {promo_code} для покупки на {promo_period} дней')
-        await bot.send_message(user_id, text.text_buy_tarif, reply_markup=keyboards.accept_button(), parse_mode="HTML")
         logger.info(sub_active)
         await state.finish()
         return

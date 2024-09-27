@@ -15,6 +15,99 @@ def add_withdrawal_request(user_id: int, amount: float, wallet: str):
     VALUES (%s, %s, %s, %s)
     ''', (user_id, amount, 'pending', wallet))
 
+
+# создаем заявку на покупку в базе
+def create_pay_id(user_id, amount, promo_id=None):
+    # Первый запрос: вставка данных
+    insert_sql = '''INSERT INTO transactions (user_id, amount_paid, promo_id)
+    VALUES (%s, %s, %s)
+    '''
+
+    execute_query(insert_sql, (user_id, amount, promo_id))
+
+    # Второй запрос: получение последнего вставленного ID
+    select_sql = 'SELECT MAX(transaction_id) AS last_transaction_id FROM transactions;'
+
+    result = execute_query(select_sql)
+
+    if result:
+        return result[0][0]
+    else:
+        return None
+
+
+def get_last_pay_id(user_id):
+    select_sql = """
+    SELECT t.transaction_id AS last_transaction_id, t.amount_paid
+        FROM transactions t
+    WHERE t.user_id = %s
+        AND t.transaction_id = (
+    SELECT MAX(transaction_id) 
+        FROM transactions 
+    WHERE user_id = %s);"""
+    result = execute_query(select_sql, (user_id, user_id,))
+    logger.info(result)
+    logger.info('--------------')
+    if result:
+        return result[0][0]
+    else:
+        return None
+
+
+def check_status_transactions(pay_id):
+    sql = """SELECT status FROM transactions WHERE transaction_id = %s"""
+    result = execute_query(sql, (pay_id,))
+    if result:
+        if result[0][0] == 1:
+            return True
+    return False
+
+
+def update_status_payment(order_id):
+    logger.info(f"Processing order_id: {order_id}")
+    sql_get_status = """
+    SELECT status FROM transactions WHERE transaction_id = %s"""
+
+    result = execute_query(sql_get_status, (str(order_id),))  # Note the comma to make it a tuple
+
+    logger.info(f"SELECT status result: {result}")
+
+    if result:
+        logger.info('Result found')
+        if result[0][0] == 1:
+            logger.info(f"Status is 1 for order_id: {order_id}")
+            return True
+
+    sql_update_status = """
+    UPDATE transactions SET status = 1 WHERE transaction_id = %s
+    """
+    execute_query(sql_update_status, (str(order_id),))
+
+    sql_get_amount_paid = """
+    SELECT amount_paid FROM transactions WHERE transaction_id = %s"""
+    result = execute_query(sql_get_amount_paid, (str(order_id),))
+
+    amount = result[0][0]
+
+    tariff = tariffs.get(amount)
+
+    sub.increment_tariff_sale(tariff)
+
+    logger.info(f"UPDATE result: sucssess")
+
+    return False
+
+
+tariffs = {
+    15.00: '1month',
+    40.00: '3months',
+    150.00: '12months',
+}
+
+# The following line should be removed or placed outside the function:
+# raise QueryExecutionError(f"Ошибка при выполнении запроса : {query},Error -  {e}")
+
+
 # # запрос для оплаты с реф баланса
 # sql_pay_from_bonus_query = """INSERT INTO user_balance_ops
 #             (user_id, optype, amount)

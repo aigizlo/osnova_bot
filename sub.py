@@ -45,13 +45,12 @@ FROM sales_stat;
 
 
 def activate_or_renewal_subscription(user_id, period):
-    print(period, ' period')
     # Проверяем, есть ли у пользователя уже активная подписка
     existing_sub = get_conn.execute_query(sql_check_existing_sub, (user_id,))
     if existing_sub:
         get_conn.execute_query(sql_renewal_subscription, (period, user_id))
-        return True, "Ваша подписка успешно продлена!"
-        # return "У пользователя уже есть активная подписка"
+        return True, "Ваша подписка успешно продлена!\n" \
+                     "Подробности в '🗃 Моя подписка'"
     start_date = datetime.now()
     stop_date = start_date + timedelta(days=period)
 
