@@ -151,6 +151,10 @@ async def select_check_status_payment(callback_query: types.CallbackQuery, state
 
     user_data_state = await state.get_data()
     user_id = callback_query.message.chat.id
+    user_name = callback_query.message.from_user.username
+    first_name = callback_query.message.from_user.first_name
+    last_name = callback_query.message.from_user.last_name
+
 
     ref_data = user_data.get_user_name_frst_name_last_name(user_id)
     logger.info(f'{ref_data} , ')
@@ -186,10 +190,16 @@ async def select_check_status_payment(callback_query: types.CallbackQuery, state
                                         bot_name=const.bot_name,
                                         month=promo_perod / 30,
                                         ref_user_id=user_id)
-
         await bot.send_message(chat_id=user_id,
                                text=answer,
                                parse_mode='HTML')
+        # Уведомляем админа
+        await bot.send_message(chat_id=const.admin,
+                               text=f"INFO: ПОКУПКА ПРОМОКОДА НА {promo_perod / 30} мес "
+                                    f"- tg: {user_id}, \n"
+                                    f"username: @{user_name}, \n"
+                                    f"first_name: {first_name}, \n"
+                                    f"last_name : {last_name}, \n")
         await referralka(user_id, pay_status[2], promo_perod)
         return
 
@@ -197,6 +207,12 @@ async def select_check_status_payment(callback_query: types.CallbackQuery, state
         # Покупка прошла
         amount = pay_status[2]
         period = period_json.get(amount)
+        await bot.send_message(chat_id=const.admin,
+                               text=f"INFO: ПОКУПКА ПОДПИСКИ НА  {period / 30} мес "
+                                    f"- tg: {user_id}, \n"
+                                    f"username: @{user_name}, \n"
+                                    f"first_name: {first_name}, \n"
+                                    f"last_name : {last_name}, \n")
         sub_active, answer_if_user_buy = sub.activate_or_renewal_subscription(user_id, period)
         await referralka(user_id, amount, period)
 

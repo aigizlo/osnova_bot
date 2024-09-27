@@ -51,8 +51,11 @@ async def process_start_command(message: types.Message, state: FSMContext):
                                        parse_mode="HTML", reply_markup=keyboards.main_menu())
                 await asyncio.sleep(1)  # Небольшая задержка между сообщениями
 
-                logging.info(f"INFO: NEW USER - tg: {user_id}, user_id: {new_user}, "
-                             f"username: {user_name}, referer: {referer_user_id}")
+
+                logging.info(f"INFO: NEW USER - tg: {user_id}, \n"
+                             f"user_id: {new_user}, \n"
+                             f"username: {user_name}, \n"
+                             f"referer: {referer_user_id}")
 
                 if referer_user_id:
                     try:
@@ -69,12 +72,11 @@ async def process_start_command(message: types.Message, state: FSMContext):
                                            reply_markup=keyboards.main_menu())
                     # Уведомляем админа о новеньком
                     await bot.send_message(chat_id=const.admin,
-                                           text=f"INFO: NEW USER - tg: {user_id}, "
-                                                f"username: @{user_name}, "
-                                                f"first_name: {first_name}, "
-                                                f"last_name : {last_name}, "
-                                                f"referer: {referer_user_id}",
-                                           reply_markup=keyboards.keyboard_period())
+                                           text=f"INFO: NEW USER - tg: {user_id}, \n"
+                                                f"username: @{user_name}, \n"
+                                                f"first_name: {first_name}, \n"
+                                                f"last_name : {last_name}, \n"
+                                                f"referer: {referer_user_id}\n")
             # Отправка основного сообщения (для новых и существующих пользователей)
             await bot.send_message(chat_id=user_id,
                                    text=text.product,
