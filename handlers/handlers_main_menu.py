@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from logger import logger
 from config import dp, bot, url_politic_conf, url_polz_solah
 import keyboards
-import su
+import sub
 
 tarif_info = f"""📚 Продукт: "ОСНОВА"
 
