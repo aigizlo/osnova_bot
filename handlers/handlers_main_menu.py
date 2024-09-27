@@ -10,15 +10,15 @@ import config
 import const
 from datetime import datetime, timedelta
 from logger import logger
-from config import dp, bot
+from config import dp, bot, url_politic_conf, url_polz_solah
 import keyboards
 import sub
 
-tarif_info = """📚 Продукт: "ОСНОВА"
+tarif_info = f"""📚 Продукт: "ОСНОВА"
 
 🗓 Тарифный план: ежемесячная подписка
 
-🚨 Оплачивая подписку, Вы принимаете условия Пользовательского соглашения и Политики конфиденциальности."""
+🚨 Оплачивая подписку, Вы принимаете условия <a href="{url_polz_solah}">Пользовательского соглашения</a> и .<a href="{url_politic_conf}">Политики конфиденциальности</a>"""
 
 
 @dp.message_handler(lambda message: message.text == '🗓 Тарифные планы', state='*')
