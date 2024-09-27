@@ -18,7 +18,7 @@ tarif_info = f"""📚 Продукт: "ОСНОВА"
 
 🗓 Тарифный план: ежемесячная подписка
 
-🚨 Оплачивая подписку, Вы принимаете условия <a href="{url_polz_solah}">Пользовательского соглашения</a> и .<a href="{url_politic_conf}">Политики конфиденциальности</a>"""
+🚨 Оплачивая подписку, Вы принимаете условия <a href="{url_polz_solah}">Пользовательского соглашения</a> и <a href="{url_politic_conf}">Политики конфиденциальности</a>"""
 
 
 @dp.message_handler(lambda message: message.text == '🗓 Тарифные планы', state='*')
@@ -54,6 +54,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
         await bot.send_message(chat_id=user_id,
                                text=txt_my_tarif_info,
                                parse_mode="HTML",
+                               disable_web_page_preview=True,
                                reply_markup=keyboards.renewal_sub())
         logger.info(f'user - {user_id} - Моя подписка (до {stop_date})')
     else:
@@ -61,7 +62,8 @@ async def my_keys_command(message: types.Message, state: FSMContext):
         await bot.send_message(chat_id=user_id,
                                text=txt_my_tarif_info,
                                parse_mode="HTML",
-                               reply_markup=keyboards.keyboard_period())
+                               disable_web_page_preview=True,
+                               reply_markup=keyboards.keyboard_period()),
         logger.info(f'user - {user_id} - Моя подписка (нет подписки)')
 
 

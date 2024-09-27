@@ -94,6 +94,7 @@ async def select_go_to_pay(callback_query: types.CallbackQuery, state: FSMContex
     await bot.send_message(chat_id=user_id,
                            text=txt_tarrif_info,
                            parse_mode="HTML",
+                           disable_web_page_preview=True,
                            # Перейти к оплате
                            # Назад
                            reply_markup=keyboards.go_to_pay())
