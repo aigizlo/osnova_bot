@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from logger import logger
 from config import dp, bot, url_politic_conf, url_polz_solah
 import keyboards
-import sub
+import su
 
 tarif_info = f"""📚 Продукт: "ОСНОВА"
 
@@ -28,6 +28,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
     await bot.send_message(chat_id=user_id,
                            text=tarif_info,
                            parse_mode="HTML",
+                           disable_web_page_preview=True,
                            reply_markup=keyboards.keyboard_period())
     logger.info(f'user - {user_id} - Тарифные планы')
 
