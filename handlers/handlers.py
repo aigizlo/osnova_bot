@@ -195,7 +195,7 @@ async def select_check_status_payment(callback_query: types.CallbackQuery, state
                                parse_mode='HTML')
         # Уведомляем админа
         await bot.send_message(chat_id=const.admin,
-                               text=f"INFO: ПОКУПКА ПРОМОКОДА НА {promo_perod / 30} мес "
+                               text=f"INFO: ПОКУПКА ПРОМОКОДА НА {int(promo_perod / 30)} мес "
                                     f"- tg: {user_id}, \n"
                                     f"username: @{user_name}, \n"
                                     f"first_name: {first_name}, \n"
@@ -208,7 +208,7 @@ async def select_check_status_payment(callback_query: types.CallbackQuery, state
         amount = pay_status[2]
         period = period_json.get(amount)
         await bot.send_message(chat_id=const.admin,
-                               text=f"INFO: ПОКУПКА ПОДПИСКИ НА  {period / 30} мес "
+                               text=f"INFO: ПОКУПКА ПОДПИСКИ НА  {int(period / 30)} мес "
                                     f"- tg: {user_id}, \n"
                                     f"username: @{user_name}, \n"
                                     f"first_name: {first_name}, \n"
