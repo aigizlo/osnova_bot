@@ -62,13 +62,13 @@ def create_payment_link(amount, order_id, description):
         raise Exception(f"Request failed: {str(e)}")
 
 
-# # Пример использования
-# try:
-#     payment_url = create_payment_link(
-#         amount=10000,  # Сумма в копейках
-#         order_id="421",
-#         description="Оплата заказа №12"
-#     )
-#     print(f"Payment URL: {payment_url}")
-# except Exception as e:
-#     print(f"Error: {str(e)}")
+# Пример использования
+try:
+    payment_url = create_payment_link(
+        amount=10000,  # Сумма в копейках
+        order_id="4321",
+        description="Оплата заказа №12"
+    )
+    print(f"Payment URL: {payment_url}")
+except Exception as e:
+    print(f"Error: {str(e)}")

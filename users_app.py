@@ -66,6 +66,14 @@ def index():
                            sale_paracents=sale_paracents, count=count)
 
 
+@app.route('/sucsseful/')
+def sucssefull_pay():
+    return render_template('sucsseful.html')
+
+@app.route('/filed/')
+def filed_pay():
+    return render_template('sucsseful.html')
+
 async def send_message_async(bot, chat_id, text):
     await bot.send_message(chat_id, text)
 
