@@ -2,10 +2,6 @@
 import asyncio
 
 from flask import Flask, render_template, request, jsonify
-
-# import logger
-from logger import logger
-
 import sub
 import user_data
 from config import support, dp, bot
@@ -70,6 +66,8 @@ def index():
                            sale_paracents=sale_paracents, count=count)
 
 
+
+
 @app.route('/sucsseful/')
 def sucssefull_pay():
     return render_template('sucsseful.html')
@@ -85,30 +83,10 @@ def send_message_sync(bot, chat_id, text):
     asyncio.run(send_message_async(bot, chat_id, text))
 
 
-from flask import Flask, request, jsonify
-
-app = Flask(__name__)
 
 
-@app.route('/notify', methods=['POST'])
-def handle_postback():
-    secret_token = '1boosZTJtRZQplpqeeeJ59Y4HFdRNau6U5yM'
-    # Изменено на request.form для обработки данных в формате x-www-form-urlencoded
-    status = request.form.get('status')
-    invoice_id = request.form.get('invoice_id')
-    amount_crypto = request.form.get('amount_crypto')
-    currency = request.form.get('currency')
-    order_id = request.form.get('order_id')
-    token = request.form.get('token')
-    if secret_token != token:
-        return 300, 'неверный токен'
-    if status == "success":
-        logger.info(f'счет {invoice_id} ')
 
 
-    # ... ваш код для обработки postback ...
-
-    return jsonify({'message': 'Postback received'}), 200
 
 if __name__ == '__main__':
     app.run(debug=True)
