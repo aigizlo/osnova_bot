@@ -71,11 +71,13 @@ def go_to_pay():
     return keyboard
 
 
-def select_card_or_usdt(url_link_pay):
+def select_card_or_usdt(url_link_pay=None, crypto_pay_link=None):
     keyboard = types.InlineKeyboardMarkup(row_width=1)
+    url = 'https://pay.osnova-pay.site/filed/' if url_link_pay is None else url_link_pay
+    crypto_pay_link = 'https://pay.osnova-pay.site/filed/' if url_link_pay is None else crypto_pay_link
     keyboard.add(
-        types.InlineKeyboardButton("Оплатить картой", url=url_link_pay),
-        types.InlineKeyboardButton("USTD (trc2-)", callback_data=f"usdt_pay"),
+        types.InlineKeyboardButton("Оплатить картой", url=url),
+        types.InlineKeyboardButton("USTD", url=crypto_pay_link),
         types.InlineKeyboardButton("⬅️ Назад", callback_data=f"go_back_to_main"),
     )
     return keyboard

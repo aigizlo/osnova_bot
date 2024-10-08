@@ -117,11 +117,19 @@ async def select_pay_method(callback_query: types.CallbackQuery, state: FSMConte
     logger.info(pay_id)
     await state.update_data(pay_id=pay_id)
 
+    description = f"Оплата заказа {pay_id} для пользователя {user_id} на сумму {price}"
+
     payment_url = create_pay_links.create_payment_link(
         amount=price * 10000,  # Сумма в копейках
         order_id=str(pay_id),
-        description=f"Оплата заказа {pay_id} для пользователя {user_id} на сумму {price}"
+        description=description
     )
+    crypto_payment_url, invoice_id = create_pay_links.create_pay_link_crypto(price, str(pay_id), description)
+ # добавляем туда invoice_id от крипто платежки
+    balance.insert_invice_id(pay_id, invoice_id)
+    await state.update_data(invoice_id=invoice_id)
+
+
     try:
         if callback_query.message.message_id:
             await bot.delete_message(chat_id=user_id, message_id=callback_query.message.message_id)
@@ -135,7 +143,7 @@ async def select_pay_method(callback_query: types.CallbackQuery, state: FSMConte
                            parse_mode="HTML",
                            # Оплата картой
                            # Оплата USTD
-                           reply_markup=keyboards.select_card_or_usdt(payment_url))
+                           reply_markup=keyboards.select_card_or_usdt(payment_url, crypto_payment_url))
     logger.info(f'user_id {user_id} - Перейти к оплате {month} месяцев {days} - дней {price} цена')
 
     time.sleep(10)
@@ -154,8 +162,6 @@ async def select_check_status_payment(callback_query: types.CallbackQuery, state
     user_name = callback_query.from_user.username
     first_name = callback_query.from_user.first_name
     last_name = callback_query.from_user.last_name
-
-
     ref_data = user_data.get_user_name_frst_name_last_name(user_id)
     logger.info(f'{ref_data} , ')
 

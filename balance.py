@@ -35,6 +35,12 @@ def create_pay_id(user_id, amount, promo_id=None):
     else:
         return None
 
+def insert_invice_id(pay_id, invoice_id):
+    update_pay_id = '''UPDATE transactions SET invoice_id = %s
+    WHERE transaction_id = %s
+    '''
+    execute_query(update_pay_id, (str(invoice_id), pay_id))
+
 
 def get_last_pay_id(user_id):
     select_sql = """
@@ -97,6 +103,40 @@ def update_status_payment(order_id):
 
     return False
 
+
+def update_status_crypto_payment(invoice_id):
+    logger.info(f"Processing invoice_id: {invoice_id}")
+    sql_get_status = """
+    SELECT status FROM transactions WHERE invoice_id = %s"""
+
+    result = execute_query(sql_get_status, (str(invoice_id),))  # Note the comma to make it a tuple
+
+    logger.info(f"SELECT status result: {result}")
+
+    if result:
+        logger.info('Result found')
+        if result[0][0] == 1:
+            logger.info(f"Status is 1 for order_id: {invoice_id}")
+            return True
+
+    sql_update_status = """
+    UPDATE transactions SET status = 1 WHERE invoice_id = %s
+    """
+    execute_query(sql_update_status, (str(invoice_id),))
+
+    sql_get_amount_paid = """
+    SELECT amount_paid FROM transactions WHERE transaction_id = %s"""
+    result = execute_query(sql_get_amount_paid, (str(invoice_id),))
+
+    amount = result[0][0]
+
+    tariff = tariffs.get(amount)
+
+    sub.increment_tariff_sale(tariff)
+
+    logger.info(f"UPDATE result: sucssess")
+
+    return False
 
 tariffs = {
     15.00: '1month',

@@ -42,6 +42,34 @@ def check_order(order_id):
         logger.error(f'check_order {order_id}, {type(e).__name__}: {e}')
         return False, f'Произошла ошибка, повторите попытку позже или обратитесь в поддержку'
 
+
+
+
+def check_crypto_pay(invoive_id):
+    import const
+    url = "https://api.cryptocloud.plus/v1/invoice/info"
+    headers = {
+        "Authorization": f"Token {const.crypto_API}"
+    }
+    params = {
+        "uuid": invoive_id
+    }
+
+    response = requests.get(url, headers=headers, params=params)
+
+    if response.status_code == 200:
+        print("Success:", response.json())
+    else:
+        print("Fail:", response.status_code, response.text)
+
+status = check_crypto_pay('FNY5I8TO')
+
+print(status)
+
+
+
+
+
 # # проверяем статус платежа
 # def getstate(payment_id):
 #     logger.info('dssdssd')
