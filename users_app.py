@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import asyncio
 
+import jwt
 from flask import Flask, render_template, request, jsonify
 import sub
 import user_data
@@ -69,22 +70,29 @@ def index():
 
 @app.route('/notify', methods=['POST'])
 def handle_postback():
-    secret_key = 'aMeOVVPHu0IM5wBWqX6atSlGSBL9720tzL7u'
-    # Изменено на request.form для обработки данных в формате x-www-form-urlencoded
+    SECRET_KEY = 'aMeOVVPHu0IM5wBWqX6atSlGSBL9720tzL7u'
+
+    # Extract data from the POST request
     status = request.form.get('status')
     invoice_id = request.form.get('invoice_id')
     amount_crypto = request.form.get('amount_crypto')
     currency = request.form.get('currency')
     order_id = request.form.get('order_id')
     token = request.form.get('token')
-    print(invoice_id)
-    print(status)
-    print(token)
-    # if status == 'success' and secret_key == token:
-    #     logger.info(f'{invoice_id} счет оплачен на {amount_crypto}')
 
 
-    # ... ваш код для обработки postback ...
+    # Verify the JWT token
+    try:
+        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+        print(decoded_token)
+        logger.info(f'{invoice_id}')
+    except jwt.ExpiredSignatureError:s
+        return jsonify({'error': 'Token has expired'}), 400
+    except jwt.InvalidTokenError:
+        return jsonify({'error': 'Invalid token'}), 400
+
+    # Process the postback information
+    # Add your logic here to handle the data, e.g., update order status in your database
 
     return jsonify({'message': 'Postback received'}), 200
 
