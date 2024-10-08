@@ -4,6 +4,7 @@ import asyncio
 from flask import Flask, render_template, request, jsonify
 import sub
 import user_data
+from logger import logger
 from config import support, dp, bot
 app = Flask(__name__)
 
@@ -66,7 +67,23 @@ def index():
                            sale_paracents=sale_paracents, count=count)
 
 
+@app.route('/notify', methods=['POST'])
+def handle_postback():
+    secret_key = 'aMeOVVPHu0IM5wBWqX6atSlGSBL9720tzL7u'
+    # Изменено на request.form для обработки данных в формате x-www-form-urlencoded
+    status = request.form.get('status')
+    invoice_id = request.form.get('invoice_id')
+    amount_crypto = request.form.get('amount_crypto')
+    currency = request.form.get('currency')
+    order_id = request.form.get('order_id')
+    token = request.form.get('token')
+    if status == 'success' and secret_key == token:
+        logger.info(f'{invoice_id} счет оплачен на {amount_crypto}')
 
+
+    # ... ваш код для обработки postback ...
+
+    return jsonify({'message': 'Postback received'}), 200
 
 @app.route('/sucsseful/')
 def sucssefull_pay():
