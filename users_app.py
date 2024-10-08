@@ -77,8 +77,11 @@ def handle_postback():
     currency = request.form.get('currency')
     order_id = request.form.get('order_id')
     token = request.form.get('token')
-    if status == 'success' and secret_key == token:
-        logger.info(f'{invoice_id} счет оплачен на {amount_crypto}')
+    print(invoice_id)
+    print(status)
+    print(token)
+    # if status == 'success' and secret_key == token:
+    #     logger.info(f'{invoice_id} счет оплачен на {amount_crypto}')
 
 
     # ... ваш код для обработки postback ...
