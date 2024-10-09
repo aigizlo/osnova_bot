@@ -145,7 +145,7 @@ async def create_links(message: types.Message):
         await message.reply("Данная команда только для администраторов")
         return
     await message.answer(f"{const.link_stat}\n"
-                         f"Заявки на вывод - {const.link_stat}withdraw", disable_web_page_preview=True)
+                         f"Заявки на вывод - {const.link_withdraw}", disable_web_page_preview=True)
 
 
 @dp.message_handler(commands=['add_balance'], state="*")
