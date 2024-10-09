@@ -3,6 +3,7 @@ import hashlib
 from logger import logger
 import balance
 
+
 # Проверяем статус ордера
 def check_order(order_id):
     import const
@@ -43,32 +44,28 @@ def check_order(order_id):
         return False, f'Произошла ошибка, повторите попытку позже или обратитесь в поддержку'
 
 
-
-
-def check_crypto_pay(invoive_id):
+def check_crypto_pay(invoice_id):
     import const
     url = "https://api.cryptocloud.plus/v1/invoice/info"
     headers = {
         "Authorization": f"Token {const.crypto_API}"
     }
     params = {
-        "uuid": invoive_id
+        "uuid": invoice_id
     }
 
     response = requests.get(url, headers=headers, params=params)
 
     if response.status_code == 200:
-        print("Success:", response.json())
+        logger.info(f"Success:, {response.json()}")
+        result = response.json()
+        if result.get('status_invoice') == 'paid':
+            balance.update_status_payment_with_invoice(invoice_id)
+            return True
+        return False
     else:
-        print("Fail:", response.status_code, response.text)
-
-status = check_crypto_pay('FNY5I8TO')
-
-print(status)
-
-
-
-
+        logger.error(f"Fail:, {response.status_code}, {response.text}")
+        return False
 
 # # проверяем статус платежа
 # def getstate(payment_id):

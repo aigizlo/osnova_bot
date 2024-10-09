@@ -20,6 +20,7 @@ class MyStates(FSMContext):
 
     present_promo_state = 'present_promo_state'
 
+    card_or_crypto_pay_select = "card_or_crypto_pay_select"
 
     insert_promo_code = 'insert_promo_code'
 

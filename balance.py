@@ -42,9 +42,9 @@ def insert_invice_id(pay_id, invoice_id):
     execute_query(update_pay_id, (str(invoice_id), pay_id))
 
 
-def get_last_pay_id(user_id):
+def get_last_pay_id_and_invoice(user_id):
     select_sql = """
-    SELECT t.transaction_id AS last_transaction_id, t.amount_paid
+    SELECT t.transaction_id AS last_transaction_id, t.invoice_id, t.amount_paid
         FROM transactions t
     WHERE t.user_id = %s
         AND t.transaction_id = (
@@ -52,10 +52,8 @@ def get_last_pay_id(user_id):
         FROM transactions 
     WHERE user_id = %s);"""
     result = execute_query(select_sql, (user_id, user_id,))
-    logger.info(result)
-    logger.info('--------------')
     if result:
-        return result[0][0]
+        return result[0]
     else:
         return None
 
@@ -69,28 +67,62 @@ def check_status_transactions(pay_id):
     return False
 
 
-def update_status_payment(order_id):
-    logger.info(f"Processing order_id: {order_id}")
+def update_status_payment(pay_id):
+    logger.info(f"Processing order_id: {pay_id}")
     sql_get_status = """
     SELECT status FROM transactions WHERE transaction_id = %s"""
 
-    result = execute_query(sql_get_status, (str(order_id),))  # Note the comma to make it a tuple
+    result = execute_query(sql_get_status, (str(pay_id),))  # Note the comma to make it a tuple
 
     logger.info(f"SELECT status result: {result}")
 
     if result:
         if result[0][0] == 1:
-            logger.info(f"Status is 1 for order_id: {order_id}")
+            logger.info(f"Status is 1 for order_id: {pay_id}")
             return True
 
     sql_update_status = """
     UPDATE transactions SET status = 1 WHERE transaction_id = %s
     """
-    execute_query(sql_update_status, (str(order_id),))
+    execute_query(sql_update_status, (str(pay_id),))
 
     sql_get_amount_paid = """
     SELECT amount_paid FROM transactions WHERE transaction_id = %s"""
-    result = execute_query(sql_get_amount_paid, (str(order_id),))
+    result = execute_query(sql_get_amount_paid, (str(pay_id),))
+
+    amount = result[0][0]
+
+    tariff = tariffs.get(amount)
+
+    sub.increment_tariff_sale(tariff)
+
+    logger.info(f"UPDATE result: sucssess")
+
+    return False
+
+
+def update_status_payment_with_invoice(invoice_id):
+    logger.info(f"Processing order_id: {invoice_id}")
+    sql_get_status = """
+    SELECT status FROM transactions WHERE invoice_id = %s"""
+
+    result = execute_query(sql_get_status, (invoice_id,))  # Note the comma to make it a tuple
+
+    logger.info(f"SELECT status result: {result}")
+
+    if result:
+        if result[0][0] == 1:
+            logger.info(f"Status is 1 for order_id: {invoice_id}")
+            return True
+
+    sql_update_status = """
+    UPDATE transactions SET status = 1 WHERE invoice_id = %s
+    """
+    execute_query(sql_update_status, (invoice_id,))
+
+    sql_get_amount_paid = """
+    SELECT amount_paid FROM transactions WHERE invoice_id = %s"""
+    result = execute_query(sql_get_amount_paid, (invoice_id,))
 
     amount = result[0][0]
 

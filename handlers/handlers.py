@@ -125,10 +125,9 @@ async def select_pay_method(callback_query: types.CallbackQuery, state: FSMConte
         description=description
     )
     crypto_payment_url, invoice_id = create_pay_links.create_pay_link_crypto(price, str(pay_id), description)
- # добавляем туда invoice_id от крипто платежки
+    # добавляем туда invoice_id от крипто платежки
     balance.insert_invice_id(pay_id, invoice_id)
     await state.update_data(invoice_id=invoice_id)
-
 
     try:
         if callback_query.message.message_id:
@@ -149,28 +148,20 @@ async def select_pay_method(callback_query: types.CallbackQuery, state: FSMConte
     time.sleep(10)
 
     await bot.send_message(chat_id=user_id,
-                           text="Нажмите, для проверки платежа",
+                           text=text.txt_check_status,
                            reply_markup=keyboards.check_status_payment())
 
 
 @dp.callback_query_handler(lambda c: c.data.startswith('check_status_payment'), state='*')
 async def select_check_status_payment(callback_query: types.CallbackQuery, state: FSMContext):
     logger.info('check_status_payment')
-
-    user_data_state = await state.get_data()
     user_id = callback_query.from_user.id
     user_name = callback_query.from_user.username
     first_name = callback_query.from_user.first_name
     last_name = callback_query.from_user.last_name
-    ref_data = user_data.get_user_name_frst_name_last_name(user_id)
-    logger.info(f'{ref_data} , ')
 
-    try:
-        pay_id = user_data_state['pay_id']
-        logger.info(f"""'pay_id' {pay_id}""")
-    except Exception as e:
-        pay_id = balance.get_last_pay_id(user_id)
-        logger.info(f"""'select_last_pay_id' {pay_id}""")
+    pay_id, invoice_id, amount = balance.get_last_pay_id_and_invoice(user_id)
+    logger.info(f"""'select_last_pay_id' {pay_id}, {invoice_id}, {amount}""")
 
     if balance.check_status_transactions(int(pay_id)):
         await bot.send_message(chat_id=user_id,
@@ -181,79 +172,120 @@ async def select_check_status_payment(callback_query: types.CallbackQuery, state
         except Exception as e:
             logger.info("Сообщение не может быть удалено.")
         return
+    # Проверяем прошла ли оплата картой
+    pay_status_card_pay = notifikation.check_order(pay_id)
+    logger.info(f'{pay_status_card_pay} - pay_status_card_pay')
+    logger.info(f'{pay_status_card_pay[2]} - pay_status_card_pay[2]')
 
-    pay_status = notifikation.check_order(pay_id)
-    logger.info(f'{pay_status} - pay_status')
+    # Проверяем прошла ли оплата криптой
+    pay_status_usdt_pay = notifikation.check_crypto_pay(invoice_id)
+    logger.info(f'{pay_status_usdt_pay} - pay_status_card_pay')
+
+    # Проверяем вдруг приобретали промокод
     promo_info = promo.get_promo_id_from_transactions(int(pay_id))
 
-    logger.info(f'{pay_status[2]} - pay_status[2]')
+    try:
+        if callback_query.message.message_id:
+            await bot.delete_message(chat_id=user_id, message_id=callback_query.message.message_id)
+    except Exception as e:
+        logger.info("Сообщение не может быть удалено.")
 
-    if promo_info and pay_status[0]:
-        promo_code = promo_info[1]
-        promo_perod = promo_info[2]
-        logger.info(f'Подарочный промоко {promo_code} на {promo_perod} дней')
-        answer = text.text_if_buy_promo(promo_code=promo_code,
-                                        bot_name=const.bot_name,
-                                        month=promo_perod / 30,
-                                        ref_user_id=user_id)
-        await bot.send_message(chat_id=user_id,
-                               text=answer,
-                               parse_mode='HTML')
-        # Уведомляем админа
-        await bot.send_message(chat_id=const.admin,
-                               text=f"INFO: ПОКУПКА ПРОМОКОДА НА {int(promo_perod / 30)} мес "
-                                    f"- tg: {user_id}, \n"
-                                    f"username: @{user_name}, \n"
-                                    f"first_name: {first_name}, \n"
-                                    f"last_name : {last_name}, \n")
-        await referralka(user_id, pay_status[2], promo_perod)
+    # Если покупали промик картой то делаем так
+    if promo_info and pay_status_card_pay[0]:
+        await if_promo_buy(promo_info, user_id, user_name, first_name, last_name, amount)
+        await state.finish()
+        return
+    # Если покупали промик криптой то делаем так
+    if promo_info and pay_status_usdt_pay:
+        await if_promo_buy(promo_info, user_id, user_name, first_name, last_name, amount)
+        await unban_from_channel_and_chat(user_id)
+        await state.finish()
         return
 
-    if pay_status[0]:
-        # Покупка прошла
-        amount = pay_status[2]
-        period = period_json.get(amount)
-        await bot.send_message(chat_id=const.admin,
-                               text=f"INFO: ПОКУПКА ПОДПИСКИ НА  {int(period / 30)} мес "
-                                    f"- tg: {user_id}, \n"
-                                    f"username: @{user_name}, \n"
-                                    f"first_name: {first_name}, \n"
-                                    f"last_name : {last_name}, \n")
-        sub_active, answer_if_user_buy = sub.activate_or_renewal_subscription(user_id, period)
-        await referralka(user_id, amount, period)
-
-        if not sub_active:
-            await bot.send_message(user_id, "Произошла ошибка, обратитесь к администратору")
-            return
-
-        await asyncio.sleep(1)
-        if answer_if_user_buy:
-            await bot.send_message(user_id, answer_if_user_buy)
-            return
-        await bot.send_message(user_id, text.text_buy_tarif, reply_markup=keyboards.accept_button(),
-                               parse_mode="HTML")
-        member_channel = await bot.get_chat_member(chat_id=const.channel_id, user_id=user_id)
-        member_chat = await bot.get_chat_member(chat_id=const.chat_id, user_id=user_id)
-
-        if member_channel.status == 'kicked':
-            await bot.unban_chat_member(chat_id=const.channel_id, user_id=user_id)
-            logger.info(f"Пользователь  {user_id} разбанен в канане")
-
-        if member_chat.status == 'kicked':
-            await bot.unban_chat_member(chat_id=const.chat_id, user_id=user_id)
-            logger.info(f"Пользователь  {user_id} разбанен в чате")
-        logger.info(f'user_id - {user_id} купил подписку на  {period} дней')
-        logger.info(sub_active)
+    if pay_status_card_pay[0]:
+        # покупка картой прошла
+        await pay_sucssess(user_id, amount, user_name, first_name, last_name)
+        await unban_from_channel_and_chat(user_id)
         await state.finish()
-        try:
-            if callback_query.message.message_id:
-                await bot.delete_message(chat_id=user_id, message_id=callback_query.message.message_id)
-        except Exception as e:
-            logger.info("Сообщение не может быть удалено.")
+        return
 
-    else:
-        await bot.send_message(chat_id=user_id,
-                               text=pay_status[1], reply_markup=keyboards.check_status_payment())
+    if pay_status_usdt_pay:
+        # покупка криптой прошла
+        await pay_sucssess(user_id, amount, user_name, first_name, last_name)
+        await state.finish()
+
+        return
+
+    await bot.send_message(chat_id=user_id,
+                           text="Зачислений по ваше заказу пока не обнаружено\n"
+                           "Если вы выбрали способ оплаты USDT, зачисление может занять до 10 минут",
+                           reply_markup=keyboards.check_status_payment())
+
+
+
+async def pay_sucssess(user_id, amount, user_name, first_name, last_name):
+    # Покупка прошла
+    period = period_json.get(int(amount*10000))
+    await bot.send_message(chat_id=const.admin,
+                           text=f"INFO: ПОКУПКА ПОДПИСКИ НА  {int(period / 30)} мес "
+                                f"- tg: {user_id}, \n"
+                                f"username: @{user_name}, \n"
+                                f"first_name: {first_name}, \n"
+                                f"last_name : {last_name}, \n")
+    sub_active, answer_if_prolong = sub.activate_or_renewal_subscription(user_id, period)
+    await referralka(user_id, amount, period)
+
+    if not sub_active:
+        await bot.send_message(user_id, "Произошла ошибка, обратитесь к администратору")
+        return
+
+    await asyncio.sleep(1)
+    # Если это продление то текст о продлении
+    if answer_if_prolong:
+        await bot.send_message(user_id, answer_if_prolong)
+        return
+    # Если это покупка
+    await bot.send_message(user_id, text.text_buy_tarif, reply_markup=keyboards.accept_button(),
+                           parse_mode="HTML")
+    logger.info(f'user_id - {user_id} купил подписку на  {period} дней')
+    logger.info(sub_active)
+
+
+async def if_promo_buy(promo_info, user_id, user_name, first_name, last_name, amount):
+    promo_code = promo_info[1]
+    promo_perod = promo_info[2]
+    logger.info(f'Подарочный промоко {promo_code} на {promo_perod} дней')
+    answer = text.text_if_buy_promo(promo_code=promo_code,
+                                    bot_name=const.bot_name,
+                                    month=promo_perod / 30,
+                                    ref_user_id=user_id)
+    await bot.send_message(chat_id=user_id,
+                           text=answer,
+                           parse_mode='HTML')
+    # Уведомляем админа
+    await bot.send_message(chat_id=const.admin,
+                           text=f"INFO: ПОКУПКА ПРОМОКОДА НА {int(promo_perod / 30)} мес "
+                                f"- tg: {user_id}, \n"
+                                f"username: @{user_name}, \n"
+                                f"first_name: {first_name}, \n"
+                                f"last_name : {last_name}, \n")
+    # отправялем текст реферреру
+    await referralka(user_id, amount, promo_perod)
+
+
+async def unban_from_channel_and_chat(user_id):
+    # Прверяем их статусы в канала и чате
+    member_channel = await bot.get_chat_member(chat_id=const.channel_id, user_id=user_id)
+    member_chat = await bot.get_chat_member(chat_id=const.chat_id, user_id=user_id)
+
+    # Если забанены то делаем разбан
+    if member_channel.status == 'kicked':
+        await bot.unban_chat_member(chat_id=const.channel_id, user_id=user_id)
+        logger.info(f"Пользователь  {user_id} разбанен в канане")
+
+    if member_chat.status == 'kicked':
+        await bot.unban_chat_member(chat_id=const.chat_id, user_id=user_id)
+        logger.info(f"Пользователь  {user_id} разбанен в чате")
 
 
 period_json = {
@@ -299,7 +331,7 @@ async def select_go_back_to_main(callback_query: types.CallbackQuery, state: FSM
         if callback_query.message.message_id:
             await bot.delete_message(chat_id=callback_query.message.chat.id,
                                      message_id=callback_query.message.message_id)
-    except aiogram.utils.exceptions.MessageCantBeDeleted:
+    except Exception as e:
         logger.info("Сообщение не может быть удалено.")
     await bot.send_message(chat_id=callback_query.message.chat.id,
                            text=txt_tarrif_info,
@@ -469,24 +501,29 @@ async def gift_subscription(callback_query: types.CallbackQuery, state: FSMConte
     logger.info('--------------')
     logger.info(pay_id)
     await state.update_data(pay_id=pay_id)
+    description = f"Оплата заказа {pay_id} для пользователя {user_id} на сумму {price}"
 
     payment_url = create_pay_links.create_payment_link(
         amount=price * 10000,  # Сумма в копейках
         order_id=str(pay_id),
-        description=f"Оплата заказа {pay_id} для пользователя {user_id} на сумму {price}"
+        description=description
     )
+    crypto_payment_url, invoice_id = create_pay_links.create_pay_link_crypto(price, str(pay_id), description)
+    # добавляем туда invoice_id от крипто платежки
+    balance.insert_invice_id(pay_id, invoice_id)
+    await state.update_data(invoice_id=invoice_id)
 
     await bot.send_message(chat_id=user_id,
                            text="Выберите способ оплаты",
                            parse_mode="HTML",
                            # Оплата картой
                            # Оплата USTD
-                           reply_markup=keyboards.select_card_or_usdt(payment_url))
+                           reply_markup=keyboards.select_card_or_usdt(payment_url, crypto_payment_url))
 
     time.sleep(10)
 
     await bot.send_message(chat_id=user_id,
-                           text="Нажмите, для проверки платежа",
+                           text=text.txt_check_status,
                            reply_markup=keyboards.check_status_payment())
 
     try:
