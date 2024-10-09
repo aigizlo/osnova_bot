@@ -70,7 +70,8 @@ def index():
 
 @app.route('/notify', methods=['POST'])
 def handle_postback():
-    SECRET_KEY = 'aMeOVVPHu0IM5wBWqX6atSlGSBL9720tzL7u'
+    import const
+    SECRET_KEY = const.SECRET_KEY
 
     # Extract data from the POST request
     status = request.form.get('status')
@@ -84,9 +85,10 @@ def handle_postback():
     # Verify the JWT token
     try:
         decoded_token = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+
         print(decoded_token)
         logger.info(f'{invoice_id}')
-    except jwt.ExpiredSignatureError:s
+    except jwt.ExpiredSignatureError:
         return jsonify({'error': 'Token has expired'}), 400
     except jwt.InvalidTokenError:
         return jsonify({'error': 'Invalid token'}), 400

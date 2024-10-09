@@ -79,7 +79,6 @@ def update_status_payment(order_id):
     logger.info(f"SELECT status result: {result}")
 
     if result:
-        logger.info('Result found')
         if result[0][0] == 1:
             logger.info(f"Status is 1 for order_id: {order_id}")
             return True
