@@ -64,15 +64,20 @@ def update_sale_statistic(price, profit):
 def get_profit_statistic():
     sql = """SELECT 
     ss.tariff_type,
-    SUM(ss.profit) AS total_profit,
-    (SUM(ss.profit) / total.total_profit * 100) AS profit_percentage,
-    total.total_profit AS overall_profit
+    IFNULL(SUM(s.profit), 0) AS total_profit,
+    IFNULL(ROUND(SUM(s.profit) / total.total_profit * 100), 0) AS profit_percentage,
+    IFNULL(ROUND(total.total_profit), 0) AS overall_profit
 FROM 
-    sale_statistic ss
-JOIN 
-    (SELECT SUM(profit) AS total_profit FROM sale_statistic) AS total ON 1=1
+    (SELECT '1month' AS tariff_type UNION ALL
+     SELECT '3months' UNION ALL
+     SELECT '12months') ss
+LEFT JOIN 
+    sale_statistic s ON s.tariff_type = ss.tariff_type
+LEFT JOIN 
+    (SELECT SUM(profit) AS total_profit FROM sale_statistic) total ON 1=1
 GROUP BY 
-    ss.tariff_type, total.total_profit;
+    ss.tariff_type, total.total_profit;  -- Добавлено total.total_profit
+
 """
     result = get_conn.execute_query(sql)
 
