@@ -253,24 +253,24 @@ async def pay_sucssess(user_id, amount, user_name, first_name, last_name):
 
 async def if_promo_buy(promo_info, user_id, user_name, first_name, last_name, amount):
     promo_code = promo_info[1]
-    promo_perod = promo_info[2]
-    logger.info(f'Подарочный промоко {promo_code} на {promo_perod} дней')
+    promo_period = promo_info[2]
+    logger.info(f'Подарочный промоко {promo_code} на {promo_period} дней')
     answer = text.text_if_buy_promo(promo_code=promo_code,
                                     bot_name=const.bot_name,
-                                    month=promo_perod / 30,
+                                    month=promo_period / 30,
                                     ref_user_id=user_id)
     await bot.send_message(chat_id=user_id,
                            text=answer,
                            parse_mode='HTML')
     # Уведомляем админа
     await bot.send_message(chat_id=const.admin,
-                           text=f"INFO: ПОКУПКА ПРОМОКОДА НА {int(promo_perod / 30)} мес "
+                           text=f"INFO: ПОКУПКА ПРОМОКОДА НА {int(promo_period / 30)} мес "
                                 f"- tg: {user_id}, \n"
                                 f"username: @{user_name}, \n"
                                 f"first_name: {first_name}, \n"
                                 f"last_name : {last_name}, \n")
     # отправялем текст реферреру
-    await referralka(user_id, amount, promo_perod)
+    await referralka(user_id, amount, promo_period)
 
 
 async def unban_from_channel_and_chat(user_id):

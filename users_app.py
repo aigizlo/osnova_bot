@@ -2,10 +2,12 @@
 import asyncio
 
 import jwt
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, Response
+
+import const
 import sub
 import user_data
-from logger import logger
+# from logger import logger
 from config import support, dp, bot
 app = Flask(__name__)
 
@@ -21,7 +23,7 @@ def withdraw():
 
     return render_template('withdraw_req.html', pending_requests=pending_requests, confirmed_requests=confirmed_requests)
 
-
+# Обновляем статус вывода средств
 @app.route('/update_status/<int:id>', methods=['POST'])
 def update_status(id):
     data = request.json
@@ -62,41 +64,12 @@ def index():
     user_data_ = user_data.show_user_data()
     links = user_data.show_links_info()
     sale_stats = sub.get_sale_stats()
+    profit_statistic = sub.get_profit_statistic()
     sale_paracents = sub.sale_paracent(sale_stats)
     count = user_data.all_users()
     return render_template('index.html', users=user_data_, links=links, sale_stats=sale_stats,
+                           profit_statistic=profit_statistic,
                            sale_paracents=sale_paracents, count=count)
-
-
-@app.route('/notify', methods=['POST'])
-def handle_postback():
-    import const
-    SECRET_KEY = const.SECRET_KEY
-    # Extract data from the POST request
-    status = request.form.get('status')
-    invoice_id = request.form.get('invoice_id')
-    amount_crypto = request.form.get('amount_crypto')
-    currency = request.form.get('currency')
-    order_id = request.form.get('order_id')
-    token = request.form.get('token')
-
-    # Verify the JWT token
-    try:
-        decoded_token = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-
-        print(decoded_token)
-        logger.info(f'{status} - {invoice_id}')
-    except jwt.ExpiredSignatureError:
-        return jsonify({'error': 'Token has expired'}), 400
-    except jwt.InvalidTokenError:
-        return jsonify({'error': 'Invalid token'}), 400
-    except Exception as e:
-        return 300
-
-    # Process the postback information
-    # Add your logic here to handle the data, e.g., update order status in your database
-
-    return jsonify({'message': 'Postback received'}), 200
 
 @app.route('/sucsseful/')
 def sucssefull_pay():

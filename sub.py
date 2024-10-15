@@ -43,6 +43,42 @@ FROM sales_stat;
 
 '''
 
+sql_update_tariff = """
+INSERT INTO sale_statistic (tariff_type, price, profit)
+VALUES (%s, %s, %s)"""
+
+tariffs = {
+    15.00: '1month',
+    40.00: '3months',
+    150.00: '12months',
+}
+
+
+def update_sale_statistic(price, profit):
+    price = float(price)
+    profit = float(profit)
+    tariff = tariffs.get(price)
+    get_conn.execute_query(sql_update_tariff, (tariff, price, profit))
+
+
+def get_profit_statistic():
+    sql = """SELECT 
+    ss.tariff_type,
+    SUM(ss.profit) AS total_profit,
+    (SUM(ss.profit) / total.total_profit * 100) AS profit_percentage,
+    total.total_profit AS overall_profit
+FROM 
+    sale_statistic ss
+JOIN 
+    (SELECT SUM(profit) AS total_profit FROM sale_statistic) AS total ON 1=1
+GROUP BY 
+    ss.tariff_type, total.total_profit;
+"""
+    result = get_conn.execute_query(sql)
+
+    return result
+
+
 
 def activate_or_renewal_subscription(user_id, period):
     # Проверяем, есть ли у пользователя уже активная подписка
@@ -119,7 +155,6 @@ def get_sale_stats():
 
 
 def sale_paracent(stats):
-
     m_all = int(stats[0][3])
     if m_all == 0:
         return 0, 0, 0, 0

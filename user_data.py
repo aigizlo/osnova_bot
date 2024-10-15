@@ -131,22 +131,26 @@ def add_referral_balance(user_id, amount, description=None):
 
 def referral_transactions(user_id, amount):
     amount = float(amount)
+    price = amount
     # Cначала узнаем есть ли реферер у юзера
     sql_get_referer_user_id = """
     SELECT referer_id FROM users WHERE user_id = %s;
     """
     result = execute_query(sql_get_referer_user_id, (user_id,))
+
     if not result[0][0]:
+        sub.update_sale_statistic(price, price)
         return False
 
     referer_id = result[0][0]
 
-    amount = amount/3/10000
+    amount = amount / 3
 
     result = add_referral_balance(referer_id, float(amount), "Реферальные начисления")
 
-    return result
+    sub.update_sale_statistic(price, price - amount)
 
+    return result
 
 
 def get_user_balance_bonus(user_id):
@@ -158,8 +162,6 @@ def get_user_balance_bonus(user_id):
     except Exception as e:
         logger.error(f"QUERY_ERROR - get_user_balance_bonus - {e}")
 
-
-print(get_user_balance_bonus(1139164093))
 
 def get_referrer_user_id(user_id):
     try:
@@ -252,7 +254,7 @@ def get_user_info(user_id=None, user_name=None):
     if not amount:
         amount = 0
 
-    #stop_date = sub.format_date_string(stop_date)
+    # stop_date = sub.format_date_string(stop_date)
     is_active = user_info[5]
 
     text = f"Информация о пользователе:\n"
