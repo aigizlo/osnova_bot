@@ -71,6 +71,20 @@ def index():
                            profit_statistic=profit_statistic,
                            sale_paracents=sale_paracents, count=count)
 
+
+@app.route('/postback', methods=['POST'])
+def handle_postback():
+    status = request.form.get('status')
+    invoice_id = request.form.get('invoice_id')
+    amount_crypto = request.form.get('amount_crypto')
+    currency = request.form.get('currency')
+    order_id = request.form.get('order_id')s
+    token = request.form.get('token')
+    print(invoice_id, status, order_id)
+
+    # ... ваш код для обработки postback ...
+
+    return jsonify({'message': 'Postback received'}), 200
 @app.route('/sucsseful/')
 def sucssefull_pay():
     return render_template('sucsseful.html')
@@ -84,10 +98,6 @@ async def send_message_async(bot, chat_id, text):
 
 def send_message_sync(bot, chat_id, text):
     asyncio.run(send_message_async(bot, chat_id, text))
-
-
-
-
 
 
 
