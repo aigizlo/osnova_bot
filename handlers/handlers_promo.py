@@ -36,6 +36,9 @@ async def select_promo_code(callback_query: types.CallbackQuery, state: FSMConte
 async def insert_promo_codes(message: types.Message, state: FSMContext):
     user_id = message.chat.id
     promo_code = message.text
+    user_name = message.from_user.username
+    first_name = message.from_user.first_name
+    last_name = message.from_user.last_name
     is_promo_valid, promo_period = promo.check_promo_code(promo_code)
     if is_promo_valid:
         sub_active, answer = sub.activate_or_renewal_subscription(user_id, promo_period)
@@ -44,6 +47,16 @@ async def insert_promo_codes(message: types.Message, state: FSMContext):
                                          promo_code=promo_code)
             if answer:
                 await bot.send_message(user_id, answer)
+                try:
+                    await bot.send_message(chat_id=const.admin,
+                                           text=f"INFO: ИСПОЛЬЗОВАЛИ ПРОМОКОД {promo_code}\n"
+                                                f"СРОК: {promo_period} дней, \n"
+                                                f"tg: {user_id}, \n"
+                                                f"username: @{user_name}, \n"
+                                                f"first_name: {first_name}, \n"
+                                                f"last_name : {last_name}, \n")
+                except Exception as e:
+                    logger.error('не удалось отправить инфу админу')
                 logger.info(f'user_id - {user_id} активировал промокод {promo_code} для продления на {promo_period} дней')
                 return
         await asyncio.sleep(1)
