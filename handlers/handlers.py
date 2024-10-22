@@ -204,34 +204,39 @@ async def select_check_status_payment(callback_query: types.CallbackQuery, state
 
     if pay_status_card_pay[0]:
         # покупка картой прошла
-        await pay_sucssess(user_id, amount, user_name, first_name, last_name)
+        await pay_sucssess(user_id, amount, user_name, first_name, last_name, card=True)
         await unban_from_channel_and_chat(user_id)
         await state.finish()
         return
 
     if pay_status_usdt_pay:
         # покупка криптой прошла
-        await pay_sucssess(user_id, amount, user_name, first_name, last_name)
+        await pay_sucssess(user_id, amount, user_name, first_name, last_name, usdt=True)
         await state.finish()
 
         return
 
     await bot.send_message(chat_id=user_id,
                            text="Зачислений по ваше заказу пока не обнаружено\n"
-                           "Если вы выбрали способ оплаты USDT, зачисление может занять до 10 минут",
+                                "Если вы выбрали способ оплаты USDT, зачисление может занять до 10 минут",
                            reply_markup=keyboards.check_status_payment())
 
 
-
-async def pay_sucssess(user_id, amount, user_name, first_name, last_name):
+async def pay_sucssess(user_id, amount, user_name, first_name, last_name, card=None, usdt=None):
     # Покупка прошла
-    period = period_json.get(int(amount*10000))
+    period = period_json.get(int(amount * 10000))
+    if card:
+        medthod_pay = "КАРТА"
+    if usdt:
+        medthod_pay = "USDT"
     await bot.send_message(chat_id=const.admin,
-                           text=f"INFO: ПОКУПКА ПОДПИСКИ НА  {int(period / 30)} мес "
-                                f"- tg: {user_id}, \n"
-                                f"username: @{user_name}, \n"
-                                f"first_name: {first_name}, \n"
-                                f"last_name : {last_name}, \n")
+                               text=f"INFO: ПОКУПКА ПОДПИСКИ НА  {int(period / 30)} мес "
+                                    f"СПОСОБ ОПЛАТЫ: {medthod_pay}, \n"
+                                    f"- tg: {user_id}, \n"
+                                    f"username: @{user_name}, \n"
+                                    f"first_name: {first_name}, \n"
+                                    f"last_name : {last_name}, \n")
+
     sub_active, answer_if_prolong = sub.activate_or_renewal_subscription(user_id, period)
     await referralka(user_id, amount, period)
 

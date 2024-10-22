@@ -32,6 +32,7 @@ async def select_promo_code(callback_query: types.CallbackQuery, state: FSMConte
     logger.info(f'user_id - {user_id} - Применить промокод')
 
 
+# ПРоверяем и используем промокод
 @dp.message_handler(state=MyStates.insert_promo_code)
 async def insert_promo_codes(message: types.Message, state: FSMContext):
     user_id = message.chat.id
