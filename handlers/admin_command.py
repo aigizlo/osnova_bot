@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import text
 from config import dp, bot, admins
 from aiogram import types
 import sub
@@ -172,6 +172,60 @@ async def create_promo(message: types.Message):
     logger.info(f"ADMIN_COMMANDS /add_balance,  , admin - {message.from_user.id}")
 
 
+@dp.message_handler(commands=['promo1'], state="*")
+async def create_promo1(message: types.Message):
+    command_parts = message.get_args().split()
+    telegram_id = message.from_user.id
+    if message.from_user.id not in admins:
+        await message.reply(f"Данная команда только для администраторов")
+        logger.info(f"ADMIN COMMAND - создать промокод, User - {telegram_id}, , НЕТ ПРАВ ДЛЯ ДАННОЙ КОМАНДЫ")
+        return
+
+    code = command_parts[0]
+    result, answer = promo.create_promo_code(code, int(30))
+    if not result:
+        await message.reply(answer)
+        return
+    answer = text.txt_create_promo1(code)
+    await message.reply(answer, parse_mode="HTML")
+    logger.info(f"ADMIN_COMMANDS /promo1,  , admin - {message.from_user.id}")
+
+
+@dp.message_handler(commands=['promo3'], state="*")
+async def create_promo3(message: types.Message):
+    command_parts = message.get_args().split()
+    telegram_id = message.from_user.id
+    if message.from_user.id not in admins:
+        await message.reply(f"Данная команда только для администраторов")
+        logger.info(f"ADMIN COMMAND - создать промокод, User - {telegram_id}, , НЕТ ПРАВ ДЛЯ ДАННОЙ КОМАНДЫ")
+        return
+
+    code = command_parts[0]
+    result, answer = promo.create_promo_code(code, int(90))
+    if not result:
+        await message.reply(answer)
+        return
+    answer = text.txt_create_promo3(code)
+    await message.reply(answer, parse_mode="HTML")
+    logger.info(f"ADMIN_COMMANDS /promo3,  , admin - {message.from_user.id}")
+
+
+@dp.message_handler(commands=['promo12'], state="*")
+async def create_promo12(message: types.Message):
+    command_parts = message.get_args().split()
+    telegram_id = message.from_user.id
+    if message.from_user.id not in admins:
+        await message.reply(f"Данная команда только для администраторов")
+        logger.info(f"ADMIN COMMAND - создать промокод, User - {telegram_id}, , НЕТ ПРАВ ДЛЯ ДАННОЙ КОМАНДЫ")
+        return
+    code = command_parts[0]
+    result, answer = promo.create_promo_code(code, int(365))
+    if not result:
+        await message.reply(answer)
+        return
+    answer = text.txt_create_promo12(code)
+    await message.reply(answer, parse_mode="HTML")
+    logger.info(f"ADMIN_COMMANDS /promo12,  , admin - {message.from_user.id}")
 #
 #
 # @dp.message_handler(commands=['balance'], state="*")
