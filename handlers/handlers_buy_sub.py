@@ -11,25 +11,25 @@ from config import support, dp, bot
 import keyboards
 from states import MyStates
 
-
-@dp.callback_query_handler(lambda c: c.data and c.data.startswith('apply_promo'), state="*")
-async def select_promo_code(callback_query: types.CallbackQuery, state: FSMContext):
-    # 🎁 Применить промокод
-    user_id = callback_query.from_user.id
-    try:
-        if callback_query.message.message_id:
-            await bot.delete_message(chat_id=callback_query.message.chat.id,
-                                     message_id=callback_query.message.message_id)
-    except aiogram.utils.exceptions.MessageCantBeDeleted:
-        logger.info("Сообщение не может быть удалено.")
-
-    answer = f"""📚 Продукт: "ОСНОВА"
-
-    Введите ваш промокод:"""
-
-    await bot.send_message(chat_id=user_id, text=answer, reply_markup=keyboards.back_to_main_menu())
-    await state.set_state(MyStates.insert_promo_code)
-    logger.info(f'user_id - {user_id} - Применить промокод')
+#
+# @dp.callback_query_handler(lambda c: c.data and c.data.startswith('apply_promo'), state="*")
+# async def select_promo_code(callback_query: types.CallbackQuery, state: FSMContext):
+#     # 🎁 Применить промокод
+#     user_id = callback_query.from_user.id
+#     try:
+#         if callback_query.message.message_id:
+#             await bot.delete_message(chat_id=callback_query.message.chat.id,
+#                                      message_id=callback_query.message.message_id)
+#     except aiogram.utils.exceptions.MessageCantBeDeleted:
+#         logger.info("Сообщение не может быть удалено.")
+#
+#     answer = f"""📚 Продукт: "ОСНОВА"
+#
+#     Введите ваш промокод:"""
+#
+#     await bot.send_message(chat_id=user_id, text=answer, reply_markup=keyboards.back_to_main_menu())
+#     await state.set_state(MyStates.insert_promo_code)
+#     logger.info(f'user_id - {user_id} - Применить промокод')
 
 
 # ПРоверяем и используем промокод

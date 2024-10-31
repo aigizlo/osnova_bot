@@ -25,9 +25,9 @@ async def select_promo_code(callback_query: types.CallbackQuery, state: FSMConte
 
     answer = f"""📚 Продукт: "ОСНОВА"
     
-    Введите ваш промокод:"""
+<u>В ответное сообщение введите ваш промокод</u>:"""
 
-    await bot.send_message(chat_id=user_id, text=answer, reply_markup=keyboards.back_to_main_menu())
+    await bot.send_message(chat_id=user_id, text=answer, reply_markup=keyboards.back_to_main_menu(), parse_mode="HTML")
     await state.set_state(MyStates.insert_promo_code)
     logger.info(f'user_id - {user_id} - Применить промокод')
 
@@ -43,20 +43,20 @@ async def insert_promo_codes(message: types.Message, state: FSMContext):
     if is_promo_valid:
         sub_active, answer = sub.activate_or_renewal_subscription(user_id, promo_period)
         if sub_active:
+            try:
+                await bot.send_message(chat_id=const.admin,
+                                       text=f"INFO: ИСПОЛЬЗОВАЛИ ПРОМОКОД {promo_code}\n"
+                                            f"СРОК: {promo_period} дней, \n"
+                                            f"tg: {user_id}, \n"
+                                            f"username: @{user_name}, \n"
+                                            f"first_name: {first_name}, \n"
+                                            f"last_name : {last_name}, \n")
+            except Exception as e:
+                logger.error('не удалось отправить инфу админу')
             promo.status_used_promo_code(user_id=user_id,
                                          promo_code=promo_code)
             if answer:
                 await bot.send_message(user_id, answer)
-                try:
-                    await bot.send_message(chat_id=const.admin,
-                                           text=f"INFO: ИСПОЛЬЗОВАЛИ ПРОМОКОД {promo_code}\n"
-                                                f"СРОК: {promo_period} дней, \n"
-                                                f"tg: {user_id}, \n"
-                                                f"username: @{user_name}, \n"
-                                                f"first_name: {first_name}, \n"
-                                                f"last_name : {last_name}, \n")
-                except Exception as e:
-                    logger.error('не удалось отправить инфу админу')
                 logger.info(f'user_id - {user_id} активировал промокод {promo_code} для продления на {promo_period} дней')
                 return
         await asyncio.sleep(1)

@@ -91,10 +91,6 @@ async def process_start_command(message: types.Message, state: FSMContext):
         logger.error(f"Ошибка {e}")
 
 
-# def job_function():
-#     get_expired_keys_info()
-
-
 async def on_startup(dispatcher):
     # Устанавливаем дефолтные команды
     await set_default_commands(dispatcher)
@@ -107,31 +103,5 @@ async def on_startup_notify(dp: Dispatcher):
 
 
 if __name__ == '__main__':
-    # scheduler.add_job(job_function, IntervalTrigger(seconds=3))
-    # scheduler.start()
-
     executor.start_polling(dp, on_startup=on_startup, skip_updates=False)
     logger.info('Бот запущен')
-
-"""SELECT
-    u.user_id,
-    u.username,
-    COUNT(r.user_id) AS referral_count,
-    COALESCE(SUM(b.amount), 0) AS balance,
-    s.is_active AS subscription,
-    MAX(s.start_date) AS start_date,
-    MAX(s.stop_date) AS stop_date
-FROM
-    users u
-LEFT JOIN
-    users r ON u.user_id = r.referer_id
-LEFT JOIN
-    (SELECT user_id, SUM(amount) as amount
-     FROM balance
-     GROUP BY user_id) b ON u.user_id = b.user_id
-LEFT JOIN
-    subscriptions s ON u.user_id = s.user_id AND s.is_active = 1
-GROUP BY
-    u.user_id, u.username
-ORDER BY
-    referral_count DESC;"""

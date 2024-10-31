@@ -177,6 +177,7 @@ async def create_promo1(message: types.Message):
     command_parts = message.get_args().split()
     telegram_id = message.from_user.id
     if message.from_user.id not in admins:
+
         await message.reply(f"Данная команда только для администраторов")
         logger.info(f"ADMIN COMMAND - создать промокод, User - {telegram_id}, , НЕТ ПРАВ ДЛЯ ДАННОЙ КОМАНДЫ")
         return
@@ -187,7 +188,7 @@ async def create_promo1(message: types.Message):
         await message.reply(answer)
         return
     answer = text.txt_create_promo1(code)
-    await message.reply(answer, parse_mode="HTML")
+    await message.reply(answer, parse_mode="HTML", disable_web_page_preview=True)
     logger.info(f"ADMIN_COMMANDS /promo1,  , admin - {message.from_user.id}")
 
 
@@ -206,7 +207,7 @@ async def create_promo3(message: types.Message):
         await message.reply(answer)
         return
     answer = text.txt_create_promo3(code)
-    await message.reply(answer, parse_mode="HTML")
+    await message.reply(answer, parse_mode="HTML", disable_web_page_preview=True)
     logger.info(f"ADMIN_COMMANDS /promo3,  , admin - {message.from_user.id}")
 
 
@@ -224,7 +225,7 @@ async def create_promo12(message: types.Message):
         await message.reply(answer)
         return
     answer = text.txt_create_promo12(code)
-    await message.reply(answer, parse_mode="HTML")
+    await message.reply(answer, parse_mode="HTML", disable_web_page_preview=True)
     logger.info(f"ADMIN_COMMANDS /promo12,  , admin - {message.from_user.id}")
 #
 #

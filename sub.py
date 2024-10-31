@@ -76,8 +76,7 @@ LEFT JOIN
 LEFT JOIN 
     (SELECT SUM(profit) AS total_profit FROM sale_statistic) total ON 1=1
 GROUP BY 
-    ss.tariff_type, total.total_profit;  -- Добавлено total.total_profit
-
+    ss.tariff_type, total.total_profit;
 """
     result = get_conn.execute_query(sql)
 
