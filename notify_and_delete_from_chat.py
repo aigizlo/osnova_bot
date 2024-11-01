@@ -18,7 +18,7 @@ subscriptions s ON last_sub.last_sub_id = s.subscription_id WHERE DATE(u.data) =
 s.is_active = 0 OR s.is_active IS NULL)
 """
 
-days = [3, 6, 9]
+days = [4, 6, 9]
 
 
 async def send_notify():
@@ -29,7 +29,7 @@ async def send_notify():
 
             for user in expired_sub_users:
                 telegram_id = user[0]
-                if day == 3:
+                if day == 4:
                     try:
                         await bot.send_message(chat_id=telegram_id,
                                                text=text.text_3_days_notify,
