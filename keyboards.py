@@ -104,7 +104,7 @@ def check_status_payment():
 def subscribe():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(
-        types.InlineKeyboardButton(""""⭕️𝐒𝐍𝐎𝐕𝐀" - подписаться ✅ """, url=const.tg_channel_link),
+        types.InlineKeyboardButton("""⭕️𝐒𝐍𝐎𝐕𝐀 - подписаться ✅ """, url=const.tg_channel_link),
         types.InlineKeyboardButton("🔁 Проверить подписку", callback_data="subscribe_check"),
 
     )

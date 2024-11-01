@@ -7,7 +7,7 @@ import text
 from config import err_send
 from logger import logger
 from user_data import execute_query
-from keyboards import renewal_sub
+import keyboards
 
 bot = Bot(token=const.token)
 
@@ -33,7 +33,8 @@ async def send_notify():
                     try:
                         await bot.send_message(chat_id=telegram_id,
                                                text=text.text_3_days_notify,
-                                               parse_mode="HTML")
+                                               parse_mode="HTML",
+                                               reply_markup=keyboards.keyboard_period())
                         logger.info(f'text_3_days_notify , был отправлен {telegram_id}')
                     except Exception as e:
                         logger.error(f"Ошибка при отправке возможно в бан юзером - {e}")
@@ -41,7 +42,8 @@ async def send_notify():
                     try:
                         await bot.send_message(chat_id=telegram_id,
                                                text=text.text_6_days_notify,
-                                               parse_mode="HTML")
+                                               parse_mode="HTML",
+                                               reply_markup=keyboards.keyboard_period())
                         logger.info(f'text_6_days_notify , был отправлен {telegram_id}')
                     except Exception as e:
                         logger.error(f"Ошибка при отправке возможно в бан юзером - {e}")
@@ -49,7 +51,8 @@ async def send_notify():
                     try:
                         await bot.send_message(chat_id=telegram_id,
                                                text=text.text_9_days_notify,
-                                               parse_mode="HTML")
+                                               parse_mode="HTML",
+                                               reply_markup=keyboards.keyboard_period())
                         logger.error(f"Ошибка при отправке возможно в бан юзером - {e}")
                     except Exception as e:
                         logger.error(f"Ошибка при отправке  - {e}")

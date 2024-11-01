@@ -353,7 +353,7 @@ async def select_accept_rules(callback_query: types.CallbackQuery, state: FSMCon
     user_id = callback_query.message.chat.id
     # Принимаю правила
     await bot.send_message(chat_id=user_id,
-                           text="✍️ </b>Подпишись на канал, а после вернись в бота и вступи в чат</b>",
+                           text="✍️ <b>Подпишись на канал, а после вернись в бота и вступи в чат</b>",
                            parse_mode="HTML",
                            # Подписаться
                            # Проверить подписку
