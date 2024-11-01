@@ -23,14 +23,7 @@ tarif_info = f"""📚 Продукт: "ОСНОВА"
 
 @dp.message_handler(lambda message: message.text == '🗓 Тарифные планы', state='*')
 async def my_keys_command(message: types.Message, state: FSMContext):
-    await message.delete()
-    try:
-        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-        logger.info('удалили')
-    except Exception as e:
-        logger.info('не удалили')
-        logger.info(f'{e}')
-        pass  # Игнорируем ошибку, если сообщение уже удалено
+
     user_id = message.from_user.id
     await delete_from_channel(user_id)
     await bot.send_message(chat_id=user_id,
@@ -43,14 +36,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
 
 @dp.message_handler(lambda message: message.text == '🗃 Моя подписка', state='*')
 async def my_keys_command(message: types.Message, state: FSMContext):
-    await message.delete()
-    try:
-        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-        logger.info('удалили')
-    except Exception as e:
-        logger.info('не удалили')
-        logger.info(f'{e}')
-        pass  # Игнорируем ошибку, если сообщение уже удалено
+
     user_id = message.from_user.id
     stop_date = sub.get_subscription_info(user_id)
     member_channel = await bot.get_chat_member(chat_id=const.channel_id, user_id=user_id)
@@ -86,14 +72,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
 
 @dp.message_handler(lambda message: message.text == '🤝 Поддержка', state='*')
 async def my_keys_command(message: types.Message, state: FSMContext):
-    await message.delete()
-    try:
-        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-        logger.info('удалили')
-    except Exception as e:
-        logger.info('не удалили')
-        logger.info(f'{e}')
-        pass  # Игнорируем ошибку, если сообщение уже удалено
+
     user_id = message.from_user.id
     await delete_from_channel(user_id)
     answer = f'''🤝 Поддержка
@@ -102,20 +81,14 @@ async def my_keys_command(message: types.Message, state: FSMContext):
 
     await bot.send_message(chat_id=user_id,
                            text=answer,
-                           parse_mode='HTML')
+                           parse_mode='HTML',
+                           reply_markup=keyboards.main_menu())
     logger.info(f'user_id - {user_id} - Поддержка')
 
 
 @dp.message_handler(lambda message: message.text == '👥 Реферальная программа', state='*')
 async def my_keys_command(message: types.Message, state: FSMContext):
-    await message.delete()
-    try:
-        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-        logger.info('удалили')
-    except Exception as e:
-        logger.info('не удалили')
-        logger.info(f'{e}')
-        pass  # Игнорируем ошибку, если сообщение уже удалено
+
 
     user_id = message.from_user.id
     await delete_from_channel(user_id)
@@ -132,27 +105,22 @@ async def my_keys_command(message: types.Message, state: FSMContext):
     else:
         await bot.send_message(chat_id=user_id,
                                text=txt,
-                               parse_mode='HTML')
+                               parse_mode='HTML',
+                               reply_markup=keyboards.main_menu())
 
     logger.info(f'user_id - {user_id} - Реферальная программа')
 
 
 @dp.message_handler(lambda message: message.text == 'Отзывы', state='*')
 async def my_keys_command(message: types.Message, state: FSMContext):
-    await message.delete()
-    try:
-        await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id - 1)
-        logger.info('удалили')
-    except Exception as e:
-        logger.info('не удалили')
-        logger.info(f'{e}')
-        pass  # Игнорируем ошибку, если сообщение уже удалено
+
     user_id = message.from_user.id
     await delete_from_channel(user_id)
     txt = f'Перейти к отзывам - https://t.me/osnova_feedbackk'
     await bot.send_message(chat_id=user_id,
                            text=txt,
-                           parse_mode='HTML')
+                           parse_mode='HTML',
+                           reply_markup=keyboards.main_menu())
     logger.info(f'user_id - {user_id} - Отзывы')
 
 
