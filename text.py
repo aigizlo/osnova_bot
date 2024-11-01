@@ -420,7 +420,9 @@ https://t.me/OSNOVA_club_bot?start=328521044\n\n
 Твой промокод 
 (тыкни на него и он скопируется)
 
+👇🏼
 <code>{code}</code>
+👆
 
 
 Он активен всего 72 часа. 
@@ -437,8 +439,10 @@ https://t.me/OSNOVA_club_bot?start=328521044\n\n
 <b>"𝐎𝐒𝐍𝐎𝐕𝐀 | 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐂𝐥𝐮𝐛"</b>\n\n
 Твой промокод 
 (тыкни на него и он скопируется)\n\n
-<code>{code}</code>
 
+👇🏼
+<code>{code}</code>
+👆
 
 Он активен всего 72 часа. 
 Не тяни! <a href="https://t.me/osnova_feedbackk">Отзывы!</a>
@@ -454,8 +458,10 @@ https://t.me/OSNOVA_club_bot?start=328521044\n\n
 <b>"𝐎𝐒𝐍𝐎𝐕𝐀 | 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐂𝐥𝐮𝐛"</b>\n\n
 Твой промокод 
 (тыкни на него и он скопируется)\n\n
-<code>{code}</code>
 
+👇🏼
+<code>{code}</code>
+👆
 
 Он активен всего 72 часа. 
 Не тяни! <a href="https://t.me/osnova_feedbackk">Отзывы!</a>
