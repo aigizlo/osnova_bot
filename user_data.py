@@ -372,3 +372,18 @@ def delete_withdraw_request(user_id):
     DELETE FROM withdrawal_requests WHERE user_id = %s AND status = "pending";
     """
     execute_query(sql, (user_id,))
+
+
+def update_rules(digit, user_id):
+    sql = """UPDATE users SET rules = %s
+    WHERE user_id = %s"""
+    execute_query(sql, (digit, user_id,))
+
+
+def get_rules(user_id):
+    sql = """SELECT rules FROM users
+    WHERE user_id = %s"""
+    result = execute_query(sql, (user_id,))
+
+    return result[0]
+

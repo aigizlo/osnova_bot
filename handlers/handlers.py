@@ -348,9 +348,11 @@ async def select_go_back_to_main(callback_query: types.CallbackQuery, state: FSM
     logger.info(f'user_id - {user_id} Вышел назад в глав меню')
 
 
+
 @dp.callback_query_handler(text="accept_rules", state="*")
 async def select_accept_rules(callback_query: types.CallbackQuery, state: FSMContext):
     user_id = callback_query.message.chat.id
+    user_data.update_rules(1, user_id)
     # Принимаю правила
     await bot.send_message(chat_id=user_id,
                            text="✍️ <b>Подпишись на канал, а после вернись в бота и вступи в чат</b>",
@@ -361,6 +363,19 @@ async def select_accept_rules(callback_query: types.CallbackQuery, state: FSMCon
 
     logger.info(f'user_id - {user_id} Подписаться на канал')
 
+
+
+@dp.callback_query_handler(text="accept_rules2", state="*")
+async def select_accept_rules2(callback_query: types.CallbackQuery, state: FSMContext):
+    user_id = callback_query.message.chat.id
+    user_data.update_rules(1, user_id)
+    # Принимаю правила
+    await bot.send_message(chat_id=user_id,
+                           text=text.text_buy_tarif,
+                           parse_mode="HTML",
+                           # Подписаться
+                           # Проверить подписку
+                           reply_markup=keyboards.accept_button())
 
 @dp.callback_query_handler(lambda c: c.data == "subscribe_check", state="*")
 async def select_subscribe_no_thanks(callback_query: types.CallbackQuery):

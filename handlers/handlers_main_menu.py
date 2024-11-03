@@ -39,6 +39,15 @@ async def my_keys_command(message: types.Message, state: FSMContext):
 
     user_id = message.from_user.id
     stop_date = sub.get_subscription_info(user_id)
+    rules = user_data.get_rules(user_id)
+    if rules[0] == 0 and stop_date:
+        await bot.send_message(chat_id=user_id,
+                               text=text.txt_if_not_rules(stop_date),
+                               parse_mode="HTML",
+                               reply_markup=keyboards.if_not_rules())
+        return
+    logger.info(rules)
+    stop_date = sub.get_subscription_info(user_id)
     member_channel = await bot.get_chat_member(chat_id=const.channel_id, user_id=user_id)
     member_chat = await bot.get_chat_member(chat_id=const.chat_id, user_id=user_id)
 

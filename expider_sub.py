@@ -25,6 +25,7 @@ async def send_notify_exrpd():
     logger.info("Начинается процесс отправки уведомлений и об истекающих подписках")
     try:
         expired_sub_users = execute_query(sql_get_expired_sub_2days)
+        print(expired_sub_users)
         for user in expired_sub_users:
             telegram_id = user[0]
             months = user[1]

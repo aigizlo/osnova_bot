@@ -3,7 +3,6 @@ import logging
 from aiogram import Dispatcher
 from aiogram.utils import executor
 
-
 from handlers.send_all import show_rassilka
 from links import tracker
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -50,7 +49,6 @@ async def process_start_command(message: types.Message, state: FSMContext):
                                        text=text.instruction,
                                        parse_mode="HTML", reply_markup=keyboards.main_menu())
                 await asyncio.sleep(1)  # Небольшая задержка между сообщениями
-
 
                 logging.info(f"INFO: NEW USER - tg: {user_id}, \n"
                              f"user_id: {new_user}, \n"

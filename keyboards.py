@@ -111,6 +111,15 @@ def subscribe():
     return keyboard
 
 
+def if_not_rules():
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard.add(
+        types.InlineKeyboardButton("""💬Вступить в чат""", callback_data='accept_rules2'),
+        types.InlineKeyboardButton("""✅Продлить подписку""", callback_data='renewal_sub')
+    )
+    return keyboard
+
+
 def join_chat():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(
