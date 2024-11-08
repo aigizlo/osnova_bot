@@ -396,9 +396,13 @@ async def select_subscribe_no_thanks(callback_query: types.CallbackQuery):
     logger.info(f"BUTTON:subscribe_check user - {user_id}")
     if chat_member.status in ["member", "administrator", "creator", "owner"]:
         user_data.update_rules(1, user_id)
+        txt = """✅ Проверка пройдена! 
+Вступай в наш чат 👇  
+
+И сразу переходи в "1. КОМНАТУ ЗАПУСКА" там начинается твой стартовый путь к трансформации.
+"""
         await bot.send_message(chat_id=user_id,
-                               text="Проверка пройдена\n"
-                                    "Вступай в наш чат",
+                               text=txt,
                                reply_markup=keyboards.join_chat(),
                                # Чат «ФУНДАМЕНТАЛИСТЫ - вступить
                                parse_mode="HTML")
