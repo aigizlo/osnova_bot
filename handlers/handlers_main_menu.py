@@ -94,8 +94,30 @@ async def my_keys_command(message: types.Message, state: FSMContext):
                            reply_markup=keyboards.main_menu())
     logger.info(f'user_id - {user_id} - Поддержка')
 
-
 @dp.message_handler(lambda message: message.text == '👥 Реферальная программа', state='*')
+async def my_keys_command(message: types.Message, state: FSMContext):
+
+
+    user_id = message.from_user.id
+    await delete_from_channel(user_id)
+    count_referrals = user_data.count_referrals(user_id)
+    if not count_referrals:
+        count_referrals = 0
+    user_balance = user_data.get_user_balance_bonus(user_id)
+    txt = text.ref_link(user_id, const.bot_name, count_referrals, user_balance)
+    if user_balance >= 50:
+        await bot.send_message(chat_id=user_id,
+                               text=txt,
+                               parse_mode='HTML',
+                               reply_markup=keyboards.withdraw())
+    else:
+        await bot.send_message(chat_id=user_id,
+                               text=txt,
+                               parse_mode='HTML',
+                               reply_markup=keyboards.main_menu())
+
+    logger.info(f'user_id - {user_id} - Реферальная программа')
+@dp.message_handler(lambda message: message.text == '🎁 Пригласить друга', state='*')
 async def my_keys_command(message: types.Message, state: FSMContext):
 
 

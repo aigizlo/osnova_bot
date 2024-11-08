@@ -69,12 +69,13 @@ async def process_start_command(message: types.Message, state: FSMContext):
                                            parse_mode="HTML",
                                            reply_markup=keyboards.main_menu())
                     # Уведомляем админа о новеньком
-                    await bot.send_message(chat_id=const.admin,
-                                           text=f"INFO: NEW USER - tg: {user_id}, \n"
-                                                f"username: @{user_name}, \n"
-                                                f"first_name: {first_name}, \n"
-                                                f"last_name : {last_name}, \n"
-                                                f"referer: {referer_user_id}\n")
+                    for admin in const.admins_notify:
+                        await bot.send_message(chat_id=admin,
+                                               text=f"INFO: NEW USER - tg: {user_id}, \n"
+                                                    f"username: @{user_name}, \n"
+                                                    f"first_name: {first_name}, \n"
+                                                    f"last_name : {last_name}, \n"
+                                                    f"referer: {referer_user_id}\n")
             # Отправка основного сообщения (для новых и существующих пользователей)
             await bot.send_message(chat_id=user_id,
                                    text=text.product,

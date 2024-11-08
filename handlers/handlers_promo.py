@@ -44,13 +44,15 @@ async def insert_promo_codes(message: types.Message, state: FSMContext):
         sub_active, answer = sub.activate_or_renewal_subscription(user_id, promo_period)
         if sub_active:
             try:
-                await bot.send_message(chat_id=const.admin,
-                                       text=f"INFO: ИСПОЛЬЗОВАЛИ ПРОМОКОД {promo_code}\n"
-                                            f"СРОК: {promo_period} дней, \n"
-                                            f"tg: {user_id}, \n"
-                                            f"username: @{user_name}, \n"
-                                            f"first_name: {first_name}, \n"
-                                            f"last_name : {last_name}, \n")
+                for admin in const.admins_notify:
+                    await bot.send_message(chat_id=admin,
+                                           text=f"INFO: ИСПОЛЬЗОВАЛИ ПРОМОКОД {promo_code}\n"
+                                                f"СРОК: {promo_period} дней, \n"
+                                                f"tg: {user_id}, \n"
+                                                f"username: @{user_name}, \n"
+                                                f"first_name: {first_name}, \n"
+                                                f"last_name : {last_name}, \n")
+
             except Exception as e:
                 logger.error('не удалось отправить инфу админу')
             promo.status_used_promo_code(user_id=user_id,

@@ -19,7 +19,7 @@ def main_menu():
     button2 = types.KeyboardButton('🗃 Моя подписка')
     button3 = types.KeyboardButton('Отзывы')
     button4 = types.KeyboardButton('🤝 Поддержка')
-    button5 = types.KeyboardButton('👥 Реферальная программа')
+    button5 = types.KeyboardButton('🎁 Пригласить друга')
 
     # Добавляем первый ряд с двумя кнопками
     keyboard.row(button1, button2)
@@ -101,10 +101,10 @@ def check_status_payment():
 
 
 # клавиатура где пользователю предлагаем подписаться на канал
-def subscribe():
+def subscribe(individual_channel_link):
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(
-        types.InlineKeyboardButton("""⭕️𝐒𝐍𝐎𝐕𝐀 - подписаться ✅ """, url=const.tg_channel_link),
+        types.InlineKeyboardButton("""⭕️𝐒𝐍𝐎𝐕𝐀 - подписаться ✅ """, url=individual_channel_link),
         types.InlineKeyboardButton("🔁 Проверить подписку", callback_data="subscribe_check"),
 
     )
@@ -123,7 +123,7 @@ def if_not_rules():
 def join_chat():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(
-        types.InlineKeyboardButton("""Чат «ФУНДАМЕНТАЛИСТЫ - вступить""", url=const.tg_chat)
+        types.InlineKeyboardButton("""ОСНОВАТЕЛИ - вступить 🤝""", url=const.tg_chat)
 
     )
     return keyboard

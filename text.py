@@ -412,18 +412,14 @@ txt_check_status = """Нажмите, для проверки платежа\n
 Время ожидание зависит от нагрузки сети"""
 
 
-def txt_create_promo1(code):
+def txt_create_promo1(code, admin_id):
     txt = f'''Переходи по ссылке 🔗 \n\n
-https://t.me/OSNOVA_club_bot?start=328521044\n\n
+https://t.me/OSNOVA_club_bot?start={admin_id}\n\n
 🎁 И получай месячную подписку в подарок по промокоду в 
-<b>"𝐎𝐒𝐍𝐎𝐕𝐀 | 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐂𝐥𝐮𝐛"</b>\n\n
-Твой промокод 
-(тыкни на него и он скопируется)
+<b>"𝐎𝐒𝐍𝐎𝐕𝐀 | 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐂𝐥𝐮𝐛"</b>\n
 
-👇🏼
-<code>{code}</code>
-👆
-
+Твой промокод: 👉🏻 <code>{code}</code>
+(тыкни на него и он скопируется)\n
 
 Он активен всего 72 часа. 
 Не тяни! <a href="https://t.me/osnova_feedbackk">Отзывы!</a>
@@ -432,17 +428,14 @@ https://t.me/OSNOVA_club_bot?start=328521044\n\n
     return txt
 
 
-def txt_create_promo3(code):
+def txt_create_promo3(code, admin_id):
     txt = f'''Переходи по ссылке 🔗 \n\n
-https://t.me/OSNOVA_club_bot?start=328521044\n\n
+https://t.me/OSNOVA_club_bot?start={admin_id}\n\n
 🎁 И получай трехмесячную подписку в подарок по промокоду в 
-<b>"𝐎𝐒𝐍𝐎𝐕𝐀 | 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐂𝐥𝐮𝐛"</b>\n\n
-Твой промокод 
-(тыкни на него и он скопируется)\n
+<b>"𝐎𝐒𝐍𝐎𝐕𝐀 | 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐂𝐥𝐮𝐛"</b>\n
 
-👇🏼
-<code>{code}</code>
-👆
+Твой промокод: 👉🏻 <code>{code}</code>
+(тыкни на него и он скопируется)\n
 
 Он активен всего 72 часа. 
 Не тяни! <a href="https://t.me/osnova_feedbackk">Отзывы!</a>
@@ -451,17 +444,14 @@ https://t.me/OSNOVA_club_bot?start=328521044\n\n
     return txt
 
 
-def txt_create_promo12(code):
+def txt_create_promo12(code, admin_id):
     txt = f'''Переходи по ссылке 🔗 \n\n
-https://t.me/OSNOVA_club_bot?start=328521044\n\n
+https://t.me/OSNOVA_club_bot?start={admin_id}\n\n
 🎁 И получай годовую подписку в подарок по промокоду в 
-<b>"𝐎𝐒𝐍𝐎𝐕𝐀 | 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐂𝐥𝐮𝐛"</b>\n\n
-Твой промокод 
-(тыкни на него и он скопируется)\n
+<b>"𝐎𝐒𝐍𝐎𝐕𝐀 | 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐂𝐥𝐮𝐛"</b>\n
 
-👇🏼
-<code>{code}</code>
-👆
+Твой промокод: 👉🏻 <code>{code}</code>
+(тыкни на него и он скопируется)\n
 
 Он активен всего 72 часа. 
 Не тяни! <a href="https://t.me/osnova_feedbackk">Отзывы!</a>

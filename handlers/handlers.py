@@ -229,13 +229,15 @@ async def pay_sucssess(user_id, amount, user_name, first_name, last_name, card=N
         medthod_pay = "КАРТА"
     if usdt:
         medthod_pay = "USDT"
-    await bot.send_message(chat_id=const.admin,
-                               text=f"INFO: ПОКУПКА ПОДПИСКИ НА  {int(period / 30)} мес "
-                                    f"СПОСОБ ОПЛАТЫ: {medthod_pay}, \n"
-                                    f"- tg: {user_id}, \n"
-                                    f"username: @{user_name}, \n"
-                                    f"first_name: {first_name}, \n"
-                                    f"last_name : {last_name}, \n")
+
+    for admin in const.admins_notify:
+        await bot.send_message(chat_id=admin,
+                                   text=f"INFO: ПОКУПКА ПОДПИСКИ НА  {int(period / 30)} мес "
+                                        f"СПОСОБ ОПЛАТЫ: {medthod_pay}, \n"
+                                        f"- tg: {user_id}, \n"
+                                        f"username: @{user_name}, \n"
+                                        f"first_name: {first_name}, \n"
+                                        f"last_name : {last_name}, \n")
 
     sub_active, answer_if_prolong = sub.activate_or_renewal_subscription(user_id, period)
     await referralka(user_id, amount, period)
@@ -267,13 +269,15 @@ async def if_promo_buy(promo_info, user_id, user_name, first_name, last_name, am
     await bot.send_message(chat_id=user_id,
                            text=answer,
                            parse_mode='HTML')
-    # Уведомляем админа
-    await bot.send_message(chat_id=const.admin,
-                           text=f"INFO: ПОКУПКА ПРОМОКОДА НА {int(promo_period / 30)} мес "
-                                f"- tg: {user_id}, \n"
-                                f"username: @{user_name}, \n"
-                                f"first_name: {first_name}, \n"
-                                f"last_name : {last_name}, \n")
+    # Уведомляем админов
+    for admin in const.admins_notify:
+        await bot.send_message(chat_id=admin,
+                               text=f"INFO: ПОКУПКА ПРОМОКОДА НА {int(promo_period / 30)} мес "
+                                    f"- tg: {user_id}, \n"
+                                    f"username: @{user_name}, \n"
+                                    f"first_name: {first_name}, \n"
+                                    f"last_name : {last_name}, \n")
+
     # отправялем текст реферреру
     await referralka(user_id, amount, promo_period)
 
@@ -352,15 +356,24 @@ async def select_go_back_to_main(callback_query: types.CallbackQuery, state: FSM
 @dp.callback_query_handler(text="accept_rules", state="*")
 async def select_accept_rules(callback_query: types.CallbackQuery, state: FSMContext):
     user_id = callback_query.message.chat.id
-    # Принимаю правила
+    ind_cnannel_link = await bot.create_chat_invite_link(
+    chat_id=const.channel_id,
+    expire_date=None,  # срок действия ссылки
+
+    member_limit=1, # лимит использований
+    creates_join_request=False # запрос на вступление
+     )
+    link = ind_cnannel_link['invite_link']
+    logger.info(f'ind_cnannel_link - {link}')
+    # # Принимаю правила
     await bot.send_message(chat_id=user_id,
                            text="✍️ <b>Подпишись на канал, а после вернись в бота и вступи в чат</b>",
                            parse_mode="HTML",
                            # Подписаться
                            # Проверить подписку
-                           reply_markup=keyboards.subscribe())
-
-    logger.info(f'user_id - {user_id} Подписаться на канал')
+                           reply_markup=keyboards.subscribe(link))
+    #
+    # logger.info(f'user_id - {user_id} Подписаться на канал')
 
 
 
