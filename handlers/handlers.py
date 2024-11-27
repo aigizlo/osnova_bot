@@ -211,6 +211,7 @@ async def select_check_status_payment(callback_query: types.CallbackQuery, state
 
     if pay_status_usdt_pay:
         # покупка криптой прошла
+        await unban_from_channel_and_chat(user_id)
         await pay_sucssess(user_id, amount, user_name, first_name, last_name, usdt=True)
         await state.finish()
 
@@ -226,18 +227,27 @@ async def pay_sucssess(user_id, amount, user_name, first_name, last_name, card=N
     # Покупка прошла
     period = period_json.get(int(amount * 10000))
     if card:
-        medthod_pay = "КАРТА"
+        medthod_pay = "💳 RUB "
+        for admin in const.admins_notify:
+            await bot.send_message(chat_id=admin,
+                                   text=f"🟢 {int(period // 30)} мес "
+                                        f"{medthod_pay}, \n"
+                                        f"📱Tg: {user_id}, \n"
+                                        f"👥 UserName: : @{user_name}, \n"
+                                        f"👤 First_Name: {first_name}, \n"
+                                        f"👤 Last_Name  : {last_name}, \n")
     if usdt:
-        medthod_pay = "USDT"
+        medthod_pay = "💲 USDT"
+        for admin in const.admins_notify:
+            await bot.send_message(chat_id=admin,
+                                   text=f"🔵 {int(period // 30)} мес "
+                                        f"{medthod_pay}, \n"
+                                        f"📱Tg: {user_id}, \n"
+                                        f"👥 UserName: : @{user_name}, \n"
+                                        f"👤 First_Name: {first_name}, \n"
+                                        f"👤 Last_Name  : {last_name}, \n")
 
-    for admin in const.admins_notify:
-        await bot.send_message(chat_id=admin,
-                                   text=f"INFO: ПОКУПКА ПОДПИСКИ НА  {int(period / 30)} мес "
-                                        f"СПОСОБ ОПЛАТЫ: {medthod_pay}, \n"
-                                        f"- tg: {user_id}, \n"
-                                        f"username: @{user_name}, \n"
-                                        f"first_name: {first_name}, \n"
-                                        f"last_name : {last_name}, \n")
+
 
     sub_active, answer_if_prolong = sub.activate_or_renewal_subscription(user_id, period)
     await referralka(user_id, amount, period)
