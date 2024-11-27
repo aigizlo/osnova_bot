@@ -67,8 +67,6 @@ def check_crypto_pay(invoice_id):
         logger.error(f"Fail:, {response.status_code}, {response.text}")
         return False
 
-
-print(check_crypto_pay('ZB3EKSFN'))
 # # проверяем статус платежа
 # def getstate(payment_id):
 #     logger.info('dssdssd')
