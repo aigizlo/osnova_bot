@@ -452,7 +452,7 @@ async def if_user_not_subscribe_chat(user_id):
     logger.info(f'{member_in_chat.status} - status in chat')
 
 
-    sleep_times = [30, 60, 120]
+    sleep_times = [300, 1800, 3600,86000]
     txt = """📌 На канал вы подписались, а в группу 
 <u>"ОСНОВАТЕЛИ"</u>  не вступили🚨 
 
