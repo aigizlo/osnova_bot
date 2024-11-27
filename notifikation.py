@@ -59,7 +59,7 @@ def check_crypto_pay(invoice_id):
     if response.status_code == 200:
         logger.info(f"Success:, {response.json()}")
         result = response.json()
-        if result.get('status_invoice') == 'paid':
+        if result.get('status_invoice') == 'paid' or result.get('status_invoice') == "overpaid":
             balance.update_status_payment_with_invoice(invoice_id)
             return True
         return False
@@ -67,6 +67,8 @@ def check_crypto_pay(invoice_id):
         logger.error(f"Fail:, {response.status_code}, {response.text}")
         return False
 
+
+print(check_crypto_pay('ZB3EKSFN'))
 # # проверяем статус платежа
 # def getstate(payment_id):
 #     logger.info('dssdssd')
