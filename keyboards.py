@@ -40,6 +40,8 @@ def keyboard_period():
         types.InlineKeyboardButton("3 месяца - 90 дней - 40 USD", callback_data=f"period:3"),
         types.InlineKeyboardButton("12 месяцев - 365 дней - 150 USD", callback_data=f"period:12"),
         types.InlineKeyboardButton("🎁 Применить промокод", callback_data="apply_promo"),
+        types.InlineKeyboardButton("🤝 Подарить промокод", callback_data="gift_promo_code"),
+
     )
     return keyboard
 
@@ -57,7 +59,7 @@ def select_pay_method():
     keyboard.add(
         types.InlineKeyboardButton("💳 Оплатить", callback_data="go_pay"),
         types.InlineKeyboardButton("🎁 Применить промокод", callback_data="apply_promo"),
-        types.InlineKeyboardButton("🎁 Подарить подписку", callback_data="gift_subscription"),
+        types.InlineKeyboardButton("🤝 Подарить промокод", callback_data="gift_promo_code"),
         types.InlineKeyboardButton("⬅️ Назад", callback_data="go_back_to_main")
     )
     return keyboard

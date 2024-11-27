@@ -50,7 +50,7 @@ async def select_period(callback_query: types.CallbackQuery, state: FSMContext):
     try:
         if callback_query.message.message_id:
             await bot.delete_message(chat_id=user_id, message_id=callback_query.message.message_id)
-    except aiogram.utils.exceptions.MessageCantBeDeleted:
+    except Exception as e:
         logger.info("Сообщение не может быть удалено.")
     logger.info(f" - {user_id}")
 
@@ -247,8 +247,6 @@ async def pay_sucssess(user_id, amount, user_name, first_name, last_name, card=N
                                         f"👤 First_Name: {first_name}, \n"
                                         f"👤 Last_Name  : {last_name}, \n")
 
-
-
     sub_active, answer_if_prolong = sub.activate_or_renewal_subscription(user_id, period)
     await referralka(user_id, amount, period)
 
@@ -362,17 +360,16 @@ async def select_go_back_to_main(callback_query: types.CallbackQuery, state: FSM
     logger.info(f'user_id - {user_id} Вышел назад в глав меню')
 
 
-
 @dp.callback_query_handler(text="accept_rules", state="*")
 async def select_accept_rules(callback_query: types.CallbackQuery, state: FSMContext):
     user_id = callback_query.message.chat.id
     ind_cnannel_link = await bot.create_chat_invite_link(
-    chat_id=const.channel_id,
-    expire_date=None,  # срок действия ссылки
+        chat_id=const.channel_id,
+        expire_date=None,  # срок действия ссылки
 
-    member_limit=1, # лимит использований
-    creates_join_request=False # запрос на вступление
-     )
+        member_limit=1,  # лимит использований
+        creates_join_request=False  # запрос на вступление
+    )
     link = ind_cnannel_link['invite_link']
     logger.info(f'ind_cnannel_link - {link}')
     # # Принимаю правила
@@ -386,7 +383,6 @@ async def select_accept_rules(callback_query: types.CallbackQuery, state: FSMCon
     # logger.info(f'user_id - {user_id} Подписаться на канал')
 
 
-
 @dp.callback_query_handler(text="accept_rules2", state="*")
 async def select_accept_rules2(callback_query: types.CallbackQuery, state: FSMContext):
     user_id = callback_query.message.chat.id
@@ -398,13 +394,15 @@ async def select_accept_rules2(callback_query: types.CallbackQuery, state: FSMCo
                            # Проверить подписку
                            reply_markup=keyboards.accept_button())
 
+
 @dp.callback_query_handler(lambda c: c.data == "subscribe_check", state="*")
 async def select_subscribe_no_thanks(callback_query: types.CallbackQuery):
     user_id = callback_query.message.chat.id
-    chat_member = await bot.get_chat_member(chat_id=const.channel_id,
-                                            user_id=user_id)
+    member_in_channel = await bot.get_chat_member(chat_id=const.channel_id,
+                                                  user_id=user_id)
+
     logger.info(f"BUTTON:subscribe_check user - {user_id}")
-    if chat_member.status in ["member", "administrator", "creator", "owner"]:
+    if member_in_channel.status in ["member", "administrator", "creator", "owner"]:
         user_data.update_rules(1, user_id)
         txt = """✅ Проверка пройдена! 
 Вступай в наш чат 👇  
@@ -418,28 +416,56 @@ async def select_subscribe_no_thanks(callback_query: types.CallbackQuery):
                                parse_mode="HTML")
         logger.info(f"""user_id - {user_id} подписался на канал""")
 
-        try:
-            if callback_query.message.message_id:
-                await bot.delete_message(chat_id=callback_query.message.chat.id,
-                                         message_id=callback_query.message.message_id)
-        except aiogram.utils.exceptions.MessageCantBeDeleted:
-            logger.info("Сообщение не может быть удалено.")
+        await if_user_not_subscribe_chat(user_id)
 
     else:
+        ind_cnannel_link = await bot.create_chat_invite_link(
+            chat_id=const.channel_id,
+            expire_date=None,
+            member_limit=1,
+            creates_join_request=False
+        )
+        link = ind_cnannel_link['invite_link']
         await bot.send_message(chat_id=user_id,
                                text="Проверка не пройдена\n"
                                     "Подпишитесь на канал",
-                               reply_markup=keyboards.subscribe(),
+                               reply_markup=keyboards.subscribe(link),
                                # Подписаться на канал
                                # Пройти проверку
                                parse_mode="HTML")
         logger.info(f"""user_id - {user_id} НЕ подписался на канал""")
-        try:
-            if callback_query.message.message_id:
-                await bot.delete_message(chat_id=callback_query.message.chat.id,
-                                         message_id=callback_query.message.message_id)
-        except aiogram.utils.exceptions.MessageCantBeDeleted:
-            logger.error("Не удалось удалить сообщение")
+
+
+    try:
+        if callback_query.message.message_id:
+            await bot.delete_message(chat_id=callback_query.message.chat.id,
+                                     message_id=callback_query.message.message_id)
+    except aiogram.utils.exceptions.MessageCantBeDeleted:
+        logger.info("Сообщение не может быть удалено.")
+
+
+# Если юззер не зашел в чат
+async def if_user_not_subscribe_chat(user_id):
+    # Узнаем его статус в чате
+    member_in_chat = await bot.get_chat_member(chat_id=const.chat_id,
+                                               user_id=user_id)
+    logger.info(f'{member_in_chat.status} - status in chat')
+
+
+    sleep_times = [30, 60, 120]
+    txt = """📌 На канал вы подписались, а в группу 
+<u>"ОСНОВАТЕЛИ"</u>  не вступили🚨 
+
+    Там все "смыслы"!
+    НЕ ПРОПУСКАЙТЕ!"""
+    if member_in_chat.status not in ["member", "administrator", "creator", "owner"]:
+        for sec in sleep_times:
+            await asyncio.sleep(sec)
+            await bot.send_message(chat_id=user_id,
+                                   text=txt,
+                                   reply_markup=keyboards.join_chat(),
+                                   # Чат «ФУНДАМЕНТАЛИСТЫ - вступить
+                                   parse_mode="HTML")
 
 
 @dp.callback_query_handler(text="renewal_sub", state="*")
@@ -576,5 +602,26 @@ async def gift_subscription(callback_query: types.CallbackQuery, state: FSMConte
         if callback_query.message.message_id:
             await bot.delete_message(chat_id=callback_query.message.chat.id,
                                      message_id=callback_query.message.message_id)
-    except aiogram.utils.exceptions.MessageCantBeDeleted:
+    except Exception as e:
+        logger.error("Не удалось удалить сообщение")
+
+
+
+@dp.callback_query_handler(lambda c: c.data == "gift_promo_code", state='*')
+async def gift_subscription(callback_query: types.CallbackQuery, state: FSMContext):
+    user_id = callback_query.message.chat.id
+    logger.info(f"BUTTON:gift_subscription user - {user_id}")
+    period = 30
+    promo, promo_id = generate_promo_code(period)
+    number_sub = user_data.all_subscriptions()
+    txt = text.txt_gift_promo(promo, user_id, 1000 - number_sub)
+    await bot.send_message(chat_id=user_id,
+                           text=txt,
+                           parse_mode="HTML",
+                           disable_web_page_preview=True)
+    try:
+        if callback_query.message.message_id:
+            await bot.delete_message(chat_id=callback_query.message.chat.id,
+                                     message_id=callback_query.message.message_id)
+    except Exception as e:
         logger.error("Не удалось удалить сообщение")

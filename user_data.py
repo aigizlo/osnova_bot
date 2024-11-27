@@ -192,6 +192,13 @@ def all_users():
     return result[0][0]
 
 
+def all_subscriptions():
+    result = execute_query("""SELECT COUNT(*) FROM subscriptions;""")
+    if not result:
+        return 0
+    return result[0][0]
+
+
 def get_user_name_frst_name_last_name(user_id):
     try:
         query = """SELECT first_name, lastname,username FROM users WHERE user_id = %s"""
@@ -386,4 +393,3 @@ def get_rules(user_id):
     result = execute_query(sql, (user_id,))
 
     return result[0]
-
