@@ -46,12 +46,13 @@ async def insert_promo_codes(message: types.Message, state: FSMContext):
             try:
                 for admin in const.admins_notify:
                     await bot.send_message(chat_id=admin,
-                                           text=f"INFO: ИСПОЛЬЗОВАЛИ ПРОМОКОД {promo_code}\n"
-                                                f"СРОК: {promo_period} дней, \n"
-                                                f"tg: {user_id}, \n"
-                                                f"username: @{user_name}, \n"
-                                                f"first_name: {first_name}, \n"
-                                                f"last_name : {last_name}, \n")
+                                           text=f"🟡 {promo_period//30} мес\n"
+                                                f"💸 {promo_code}\n"
+                                                f"⏳ {promo_period} дней, \n"
+                                                f"📱 {user_id}, \n"
+                                                f"👥 UserName: @{user_name}, \n"
+                                                f"👤 First_Name: {first_name}, \n"
+                                                f"👤 Last_Name: {last_name}, \n")
 
             except Exception as e:
                 logger.error('не удалось отправить инфу админу')
