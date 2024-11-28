@@ -612,9 +612,12 @@ async def gift_subscription(callback_query: types.CallbackQuery, state: FSMConte
     user_id = callback_query.message.chat.id
     logger.info(f"BUTTON:gift_subscription user - {user_id}")
     period = 30
+    month = 1
     promo, promo_id = generate_promo_code(period)
     number_sub = user_data.all_subscriptions()
-    txt = text.txt_gift_promo(promo, user_id, 1000 - number_sub)
+
+    # txt = text.txt_gift_promo(promo, user_id, 1000 - number_sub)
+    txt = text.text_if_buy_promo(promo, const.bot_name, user_id, month)
     await bot.send_message(chat_id=user_id,
                            text=txt,
                            parse_mode="HTML",

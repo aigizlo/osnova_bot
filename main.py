@@ -73,7 +73,7 @@ async def process_start_command(message: types.Message, state: FSMContext):
                         await bot.send_message(chat_id=admin,
                                                text=f"ℹ️ NEW USER"
                                                     f"📱 {new_user}\n"
-                                                    f"👥 UserName: {user_name}, \n"
+                                                    f"👥 UserName: @{user_name}, \n"
                                                     f"👤 First_Name: {first_name}\n"
                                                     f"👤 Last_Name: {first_name}\n"
                                                     f"📲 Ref: {referer_user_id}")

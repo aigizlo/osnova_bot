@@ -137,7 +137,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
         await bot.send_message(chat_id=user_id,
                                text=txt,
                                parse_mode='HTML',
-                               reply_markup=keyboards.main_menu())
+                               reply_markup=keyboards.gift_promo())
 
     logger.info(f'user_id - {user_id} - Реферальная программа')
 

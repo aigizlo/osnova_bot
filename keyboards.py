@@ -160,3 +160,11 @@ def cansel_withdraw_requests():
         types.InlineKeyboardButton("Отменить", callback_data="cancel")
     )
     return keyboard
+
+
+def gift_promo():
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard.add(
+        types.InlineKeyboardButton("🤝 Подарить промокод", callback_data="gift_promo_code"),
+    )
+    return keyboard

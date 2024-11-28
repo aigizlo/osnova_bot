@@ -187,7 +187,9 @@ async def create_promo1(message: types.Message):
     if not result:
         await message.reply(answer)
         return
-    answer = text.txt_create_promo1(code, telegram_id)
+    # answer = text.txt_create_promo1(code, telegram_id)
+    number_sub = user_data.all_subscriptions()
+    answer = text.txt_gift_promo(promo, telegram_id, 1000 - number_sub, 30)
     await message.reply(answer, parse_mode="HTML", disable_web_page_preview=True)
     logger.info(f"ADMIN_COMMANDS /promo1,  , admin - {message.from_user.id}")
 
@@ -206,7 +208,9 @@ async def create_promo3(message: types.Message):
     if not result:
         await message.reply(answer)
         return
-    answer = text.txt_create_promo3(code, telegram_id)
+    # answer = text.txt_create_promo3(code, telegram_id)
+    number_sub = user_data.all_subscriptions()
+    answer = text.txt_gift_promo(promo, telegram_id, 1000 - number_sub, 90)
     await message.reply(answer, parse_mode="HTML", disable_web_page_preview=True)
     logger.info(f"ADMIN_COMMANDS /promo3,  , admin - {message.from_user.id}")
 
@@ -224,7 +228,9 @@ async def create_promo12(message: types.Message):
     if not result:
         await message.reply(answer)
         return
-    answer = text.txt_create_promo12(code, telegram_id)
+    # answer = text.txt_create_promo12(code, telegram_id)
+    number_sub = user_data.all_subscriptions()
+    answer = text.txt_gift_promo(promo, telegram_id, 1000 - number_sub, 365)
     await message.reply(answer, parse_mode="HTML", disable_web_page_preview=True)
     logger.info(f"ADMIN_COMMANDS /promo12,  , admin - {message.from_user.id}")
 #
