@@ -104,17 +104,25 @@ async def my_keys_command(message: types.Message, state: FSMContext):
     if not count_referrals:
         count_referrals = 0
     user_balance = user_data.get_user_balance_bonus(user_id)
-    txt = text.ref_link(user_id, const.bot_name, count_referrals, user_balance)
+    txt1 = text.ref_link(count_referrals, user_balance)
+    txt2 = text.ref_link2(user_id, const.bot_name)
     if user_balance >= 50:
         await bot.send_message(chat_id=user_id,
-                               text=txt,
+                               text=txt1,
                                parse_mode='HTML',
                                reply_markup=keyboards.withdraw())
+        await bot.send_message(chat_id=user_id,
+                               text=txt2,
+                               parse_mode='HTML',
+                               reply_markup=keyboards.gift_promo())
     else:
         await bot.send_message(chat_id=user_id,
-                               text=txt,
+                               text=txt1,
+                               parse_mode='HTML')
+        await bot.send_message(chat_id=user_id,
+                               text=txt2,
                                parse_mode='HTML',
-                               reply_markup=keyboards.main_menu())
+                               reply_markup=keyboards.gift_promo())
 
     logger.info(f'user_id - {user_id} - Реферальная программа')
 @dp.message_handler(lambda message: message.text == '🎁 Пригласить друга', state='*')
@@ -127,15 +135,24 @@ async def my_keys_command(message: types.Message, state: FSMContext):
     if not count_referrals:
         count_referrals = 0
     user_balance = user_data.get_user_balance_bonus(user_id)
-    txt = text.ref_link(user_id, const.bot_name, count_referrals, user_balance)
+    txt1 = text.ref_link(count_referrals, user_balance)
+    txt2 = text.ref_link2(user_id, const.bot_name)
     if user_balance >= 50:
         await bot.send_message(chat_id=user_id,
-                               text=txt,
+                               text=txt1,
                                parse_mode='HTML',
                                reply_markup=keyboards.withdraw())
+
+        await bot.send_message(chat_id=user_id,
+                               text=txt2,
+                               parse_mode='HTML',
+                               reply_markup=keyboards.gift_promo())
     else:
         await bot.send_message(chat_id=user_id,
-                               text=txt,
+                               text=txt1,
+                               parse_mode='HTML',)
+        await bot.send_message(chat_id=user_id,
+                               text=txt2,
                                parse_mode='HTML',
                                reply_markup=keyboards.gift_promo())
 

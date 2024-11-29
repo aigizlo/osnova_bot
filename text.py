@@ -107,9 +107,14 @@ text_buy_tarif = '''
 <strong>&quot;ПРИНИМАЮ ПРАВИЛА&quot;</strong>'''
 
 
-def ref_link(user_id, bot_name, count, balance):
+def ref_link(count, balance):
     txt_referal = f'''
 <strong>👥 Партнерская программа</strong>
+<strong><u>💵 Ваша статистика:</u></strong>
+
+- 1 Уровень 33,3%: активна
+— Активных партнеров: {count}
+— Партнерский баланс: {balance}
 
 
 <u>🔰 Условия:</u>
@@ -140,17 +145,17 @@ def ref_link(user_id, bot_name, count, balance):
 
 3. Переманивать подписчиков клуба, чтобы они заново зашли в клуб, но уже по вашей партнерской ссылке.
 
-<strong><u>💵 Ваша статистика:</u></strong>
-
-- 1 Уровень 33,3%: активна
-— Активных партнеров: {count}
-— Партнерский баланс: {balance}
-
-<strong>✅ Ваша партнерская ссылка: </strong>
-
-<code>https://t.me/{bot_name}?start={user_id}</code>\n\n
     '''
     return txt_referal
+
+
+def ref_link2(user_id, bot_name):
+    txt = f"""
+    <strong>Приглашаю тебя в закрытый клуб
+"𝐎𝐒𝐍𝐎𝐕𝐀 | 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐂𝐥𝐮𝐛" </strong>
+
+по ссылке: <code>https://t.me/{bot_name}?start={user_id}</code>\n\n"""
+    return txt
 
 
 # def not_ref_link(count, balance):
@@ -450,8 +455,11 @@ def txt_gift_promo(code, user_id, number, days):
 https://t.me/OSNOVA_club_bot?start={user_id}
 
 <b>😇 Добро пожаловать в клуб!</b>
-🤝 Отзывы о клубе: @osnova_feedbackk'''
+🤝 Отзывы о клубе: @osnova_feedbackk
+
+🛒 <i>P.s. Партнерские вознаграждения с промокодов не начисляются.</i>	'''
     return txt
+
 
 def text_if_buy_promo(promo_code, bot_name, ref_user_id, month):
     txt = f"""
