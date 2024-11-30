@@ -242,7 +242,6 @@ def tarrif_info_2(month, price, days):
 def my_tarif_info(date=None):
     if date:
         txt = f"""
-замен
 📚 Продукт: 
 <strong>&quot;ОСНОВА&quot;</strong>
 

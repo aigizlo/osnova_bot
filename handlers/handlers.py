@@ -435,7 +435,6 @@ async def select_subscribe_no_thanks(callback_query: types.CallbackQuery):
                                parse_mode="HTML")
         logger.info(f"""user_id - {user_id} НЕ подписался на канал""")
 
-
     try:
         if callback_query.message.message_id:
             await bot.delete_message(chat_id=callback_query.message.chat.id,
@@ -446,26 +445,52 @@ async def select_subscribe_no_thanks(callback_query: types.CallbackQuery):
 
 # Если юззер не зашел в чат
 async def if_user_not_subscribe_chat(user_id):
-    # Узнаем его статус в чате
-    member_in_chat = await bot.get_chat_member(chat_id=const.chat_id,
-                                               user_id=user_id)
-    logger.info(f'{member_in_chat.status} - status in chat')
+    try:
+        # Проверяем статус пользователя в чате
+        member_in_chat = await bot.get_chat_member(chat_id=const.chat_id, user_id=user_id)
+        logger.info(f'User {user_id} status in chat: {member_in_chat.status}')
+
+        # Если пользователь не подписан
+        if member_in_chat.status == "left":
+            sleep_times = [300, 1800, 3600, 86000]
+            txt = """📌 На канал вы подписались, а в группу 
+<u>"ОСНОВАТЕЛИ"</u> не вступили🚨 
+
+Там все "смыслы"!
+НЕ ПРОПУСКАЙТЕ!"""
+
+            for sec in sleep_times:
+                # Проверяем статус перед каждой отправкой
+                current_status = (await bot.get_chat_member(chat_id=const.chat_id, user_id=user_id)).status
+                if current_status == "left":
+                    await bot.send_message(
+                        chat_id=user_id,
+                        text=txt,
+                        reply_markup=keyboards.join_chat(),
+                        parse_mode="HTML"
+                    )
+                    await asyncio.sleep(sec)
+                else:
+                    # Если пользователь вступил, прекращаем отправку сообщений
+                    logger.info(f'User {user_id} joined the chat')
+                    break
+
+    except Exception as e:
+        logger.error(f'Error checking subscription for user {user_id}: {e}')
+        # Можно добавить обработку конкретных исключений
+        return False
 
 
-    sleep_times = [300, 1800, 3600,86000]
-    txt = """📌 На канал вы подписались, а в группу 
-<u>"ОСНОВАТЕЛИ"</u>  не вступили🚨 
-
-    Там все "смыслы"!
-    НЕ ПРОПУСКАЙТЕ!"""
-    if member_in_chat.status not in ["member", "administrator", "creator", "owner"]:
-        for sec in sleep_times:
-            await asyncio.sleep(sec)
-            await bot.send_message(chat_id=user_id,
-                                   text=txt,
-                                   reply_markup=keyboards.join_chat(),
-                                   # Чат «ФУНДАМЕНТАЛИСТЫ - вступить
-                                   parse_mode="HTML")
+# Дополнительно можно создать функцию для одноразовой проверки статуса
+async def check_subscription_status(user_id):
+    try:
+        member = await bot.get_chat_member(chat_id=const.chat_id, user_id=user_id)
+        is_subscribed = member.status in ["member", "administrator", "creator", "owner"]
+        logger.info(f'User {user_id} subscription status: {member.status}')
+        return is_subscribed
+    except Exception as e:
+        logger.error(f'Error checking status for user {user_id}: {e}')
+        return False
 
 
 @dp.callback_query_handler(text="renewal_sub", state="*")
@@ -604,7 +629,6 @@ async def gift_subscription(callback_query: types.CallbackQuery, state: FSMConte
                                      message_id=callback_query.message.message_id)
     except Exception as e:
         logger.error("Не удалось удалить сообщение")
-
 
 
 @dp.callback_query_handler(lambda c: c.data == "gift_promo_code", state='*')
