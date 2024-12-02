@@ -3,6 +3,8 @@ import const
 import aiogram
 from aiogram import types
 from aiogram.dispatcher import FSMContext
+
+import user_data
 from logger import logger
 import sub
 import text
@@ -42,7 +44,13 @@ async def insert_promo_codes(message: types.Message, state: FSMContext):
     is_promo_valid, promo_period = promo.check_promo_code(promo_code)
     if is_promo_valid:
         sub_active, answer = sub.activate_or_renewal_subscription(user_id, promo_period)
+        user_balance = 0
+        try:
+            user_balance = user_data.get_user_balance_bonus(user_id)
+        except:
+            user_balance = 0
         if sub_active:
+
             try:
                 for admin in const.admins_notify:
                     await bot.send_message(chat_id=admin,
@@ -52,7 +60,8 @@ async def insert_promo_codes(message: types.Message, state: FSMContext):
                                                 f"📱 {user_id}, \n"
                                                 f"👥 UserName: @{user_name}, \n"
                                                 f"👤 First_Name: {first_name}, \n"
-                                                f"👤 Last_Name: {last_name}, \n")
+                                                f"👤 Last_Name: {last_name}, \n"
+                                                f"💰 Balance: {user_balance}")
 
             except Exception as e:
                 logger.error('не удалось отправить инфу админу')

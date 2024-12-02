@@ -3,6 +3,7 @@ import logging
 from aiogram import Dispatcher
 from aiogram.utils import executor
 
+import text
 from handlers.send_all import show_rassilka
 from links import tracker
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -23,7 +24,14 @@ select_promo_code
 create_promo
 scheduler = AsyncIOScheduler
 
-
+async def send_notify_72_min_later(user_id, new_user):
+    await asyncio.sleep(4320)
+    stop_date = sub.get_subscription_info(user_id)
+    if not stop_date and new_user:
+        logger.info(f'Отправляем пользователю {user_id} сообщение спустя 72 минуты')
+        await bot.send_message(chat_id=user_id,
+                               text=text.text_72_min_notify,
+                               parse_mode="HTML", reply_markup=keyboards.keyboard_period())
 @dp.message_handler(commands=['start'], state="*")
 async def process_start_command(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
@@ -68,20 +76,23 @@ async def process_start_command(message: types.Message, state: FSMContext):
                                            text="Главное меню",
                                            parse_mode="HTML",
                                            reply_markup=keyboards.main_menu())
-                    # Уведомляем админа о новеньком
-                    for admin in const.admins_notify:
-                        await bot.send_message(chat_id=admin,
-                                               text=f"ℹ️ NEW USER"
-                                                    f"📱 {new_user}\n"
-                                                    f"👥 UserName: @{user_name}, \n"
-                                                    f"👤 First_Name: {first_name}\n"
-                                                    f"👤 Last_Name: {first_name}\n"
-                                                    f"📲 Ref: {referer_user_id}")
-            # Отправка основного сообщения (для новых и существующих пользователей)
+                await bot.send_message(chat_id=user_id,
+                                       text=text.product,
+                                       reply_markup=keyboards.keyboard_period())
+                # Уведомляем админа о новеньком
+                for admin in const.admins_notify:
+                    await bot.send_message(chat_id=admin,
+                                           text=f"ℹ️ NEW USER"
+                                                f"📱 {new_user}\n"
+                                                f"👥 UserName: @{user_name}, \n"
+                                                f"👤 First_Name: {first_name}\n"
+                                                f"👤 Last_Name: {first_name}\n"
+                                                f"📲 Ref: {referer_user_id}")
+
             await bot.send_message(chat_id=user_id,
                                    text=text.product,
                                    reply_markup=keyboards.keyboard_period())
-
+            await send_notify_72_min_later(user_id, new_user)
         except Exception as e:
             error_message = f"Ошибка при обработке команды start: {e}"
             await bot.send_message(config.err_send, error_message)

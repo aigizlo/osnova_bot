@@ -134,7 +134,9 @@ def join_chat():
 def renewal_sub():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
     keyboard.add(
-        types.InlineKeyboardButton("""✅Продлить подписку""", callback_data='renewal_sub')
+        types.InlineKeyboardButton("""✅Продлить подписку""", callback_data='renewal_sub'),
+        types.InlineKeyboardButton("🤝 Подарить промокод", callback_data="gift_promo_code"),
+
     )
     return keyboard
 

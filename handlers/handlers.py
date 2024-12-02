@@ -226,8 +226,10 @@ async def select_check_status_payment(callback_query: types.CallbackQuery, state
 async def pay_sucssess(user_id, amount, user_name, first_name, last_name, card=None, usdt=None):
     # Покупка прошла
     period = period_json.get(int(amount * 10000))
+    user_balance = user_data.get_user_balance_bonus(user_id)
     if card:
         medthod_pay = "💳 RUB "
+
         for admin in const.admins_notify:
             await bot.send_message(chat_id=admin,
                                    text=f"🟢 {int(period // 30)} мес "
@@ -235,7 +237,8 @@ async def pay_sucssess(user_id, amount, user_name, first_name, last_name, card=N
                                         f"📱Tg: {user_id}, \n"
                                         f"👥 UserName: : @{user_name}, \n"
                                         f"👤 First_Name: {first_name}, \n"
-                                        f"👤 Last_Name  : {last_name}, \n")
+                                        f"👤 Last_Name  : {last_name}, \n"
+                                        f"💰 Balance: {user_balance}")
     if usdt:
         medthod_pay = "💲 USDT"
         for admin in const.admins_notify:
@@ -245,7 +248,9 @@ async def pay_sucssess(user_id, amount, user_name, first_name, last_name, card=N
                                         f"📱Tg: {user_id}, \n"
                                         f"👥 UserName: : @{user_name}, \n"
                                         f"👤 First_Name: {first_name}, \n"
-                                        f"👤 Last_Name  : {last_name}, \n")
+                                        f"👤 Last_Name  : {last_name}, \n"
+                                        f"💰 Balance: {user_balance}")
+
 
     sub_active, answer_if_prolong = sub.activate_or_renewal_subscription(user_id, period)
     await referralka(user_id, amount, period)

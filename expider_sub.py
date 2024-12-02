@@ -69,7 +69,7 @@ s.is_active = 0 OR s.is_active IS NULL)
 
 
 async def send_notify():
-    days = [3, 6, 9]
+    days = [1, 2]
     logger.info("Начинаем процесс уведомлений для пользователей не купивших подписку")
     try:
         for day in days:
@@ -77,18 +77,18 @@ async def send_notify():
 
             for user in expired_sub_users:
                 telegram_id = user[0]
-                if day == 3:
+                if day == 1:
                     try:
                         await bot.send_message(chat_id=telegram_id,
-                                               text=text.text_3_days_notify,
+                                               text=text.text_1_day_notify,
                                                parse_mode="HTML")
-                        logger.info(f'text_3_days_notify , был отправлен {telegram_id}')
+                        logger.info(f'text_1_day_notify , был отправлен {telegram_id}')
                     except Exception as e:
                         logger.error(f"Ошибка при отправке возможно в бан юзером - {e}")
-                if day == 6:
+                if day == 2:
                     try:
                         await bot.send_message(chat_id=telegram_id,
-                                               text=text.text_6_days_notify,
+                                               text=text.text_2_days_notify,
                                                parse_mode="HTML")
                         logger.info(f'text_6_days_notify , был отправлен {telegram_id}')
                     except Exception as e:
