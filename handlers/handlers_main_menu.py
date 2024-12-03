@@ -110,11 +110,13 @@ async def my_keys_command(message: types.Message, state: FSMContext):
         await bot.send_message(chat_id=user_id,
                                text=txt1,
                                parse_mode='HTML',
-                               reply_markup=keyboards.withdraw())
+                               reply_markup=keyboards.withdraw(),
+                               disable_web_page_preview=True)
         await bot.send_message(chat_id=user_id,
                                text=txt2,
                                parse_mode='HTML',
-                               reply_markup=keyboards.gift_promo())
+                               reply_markup=keyboards.gift_promo(),
+                               disable_web_page_preview=True)
     else:
         await bot.send_message(chat_id=user_id,
                                text=txt1,
