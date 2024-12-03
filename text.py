@@ -155,7 +155,7 @@ def ref_link2(user_id, bot_name):
 "𝐎𝐒𝐍𝐎𝐕𝐀 | 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐂𝐥𝐮𝐛" </strong>
 
 🔗 Переходи по ссылке:
-<code>https://t.me/{bot_name}?start={user_id}</code>\n
+https://t.me/{bot_name}?start={user_id}\n
 Подписывайся на канал и вступай в чат  <strong>«ОСНОВАТЕЛИ»</strong>
 
 <strong>😇 Добро пожаловать в клуб!</strong>
