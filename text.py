@@ -158,6 +158,9 @@ def ref_link2(user_id, bot_name):
 <code>https://t.me/{bot_name}?start={user_id}</code>\n
 Подписывайся на канал и вступай в чат  <strong>«ОСНОВАТЕЛИ»</strong>
 
+<strong>😇 Добро пожаловать в клуб!</strong>
+🤝 Отзывы о клубе: @osnova_feedbackk
+
 """
     return txt
 
