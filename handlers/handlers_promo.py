@@ -45,7 +45,7 @@ async def insert_promo_codes(message: types.Message, state: FSMContext):
     referer_user_id = user_data.get_referrer_user_id(user_id)
     ref_user_name = None
     if referer_user_id:
-        ref_user_name = user_data.get_referrer_username(user_id)
+        ref_user_name = user_data.get_referrer_username(referer_user_id)
     if is_promo_valid:
         sub_active, answer = sub.activate_or_renewal_subscription(user_id, promo_period)
         user_balance = 0
