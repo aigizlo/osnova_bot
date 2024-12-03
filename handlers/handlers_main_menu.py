@@ -120,11 +120,13 @@ async def my_keys_command(message: types.Message, state: FSMContext):
     else:
         await bot.send_message(chat_id=user_id,
                                text=txt1,
-                               parse_mode='HTML')
+                               parse_mode='HTML',
+                               disable_web_page_preview=True)
         await bot.send_message(chat_id=user_id,
                                text=txt2,
                                parse_mode='HTML',
-                               reply_markup=keyboards.gift_promo())
+                               reply_markup=keyboards.gift_promo(),
+                               disable_web_page_preview=True)
 
     logger.info(f'user_id - {user_id} - Реферальная программа')
 @dp.message_handler(lambda message: message.text == '🎁 Пригласить друга', state='*')
