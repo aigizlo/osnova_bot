@@ -80,6 +80,9 @@ sql_get_users = "SELECT telegram_id FROM users"
 
 slq_get_referrer_user_id = """SELECT referer_id FROM users WHERE user_id = %s"""
 
+slq_get_referrer_username = """SELECT username FROM users WHERE user_id = %s"""
+
+
 
 def get_list_admins_telegram_id():
     sql_query = "SELECT telegram_id FROM users WHERE admin = 1"
@@ -166,6 +169,14 @@ def get_user_balance_bonus(user_id):
 def get_referrer_user_id(user_id):
     try:
         result = execute_query(slq_get_referrer_user_id, (user_id,))
+        return result[0][0]
+    except Exception as e:
+        logger.error(f"QUERY_ERROR - get_referrer_user_id - {e}")
+
+
+def get_referrer_username(user_id):
+    try:
+        result = execute_query(slq_get_referrer_username, (user_id,))
         return result[0][0]
     except Exception as e:
         logger.error(f"QUERY_ERROR - get_referrer_user_id - {e}")

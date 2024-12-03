@@ -24,6 +24,7 @@ select_promo_code
 create_promo
 scheduler = AsyncIOScheduler
 
+
 async def send_notify_72_min_later(user_id, new_user):
     await asyncio.sleep(4320)
     stop_date = sub.get_subscription_info(user_id)
@@ -32,6 +33,8 @@ async def send_notify_72_min_later(user_id, new_user):
         await bot.send_message(chat_id=user_id,
                                text=text.text_72_min_notify,
                                parse_mode="HTML", reply_markup=keyboards.keyboard_period())
+
+
 @dp.message_handler(commands=['start'], state="*")
 async def process_start_command(message: types.Message, state: FSMContext):
     user_id = message.from_user.id
@@ -62,32 +65,40 @@ async def process_start_command(message: types.Message, state: FSMContext):
                              f"user_id: {new_user}, \n"
                              f"username: {user_name}, \n"
                              f"referer: {referer_user_id}")
-
+                ref_username = None
                 if referer_user_id:
+                    ref_username = None
                     try:
                         txt = text.ref_send_if_reg(first_name, last_name, user_name)
                         logger.info(txt)
-                        logger.info('----------------------')
+
+                        ref_username = user_data.get_referrer_username(referer_user_id)
                         await bot.send_message(referer_user_id, txt, parse_mode="HTML")
                     except Exception as e:
+                        ref_username = None
                         logger.error('Ошибка', e)
 
                     await bot.send_message(chat_id=user_id,
                                            text="Главное меню",
                                            parse_mode="HTML",
                                            reply_markup=keyboards.main_menu())
-                await bot.send_message(chat_id=user_id,
-                                       text=text.product,
-                                       reply_markup=keyboards.keyboard_period())
+                # await bot.send_message(chat_id=user_id,
+                #                        text=text.product,
+                #                        reply_markup=keyboards.keyboard_period())
                 # Уведомляем админа о новеньком
+
                 for admin in const.admins_notify:
-                    await bot.send_message(chat_id=admin,
-                                           text=f"ℹ️ NEW USER"
-                                                f"📱 {new_user}\n"
-                                                f"👥 UserName: @{user_name}, \n"
-                                                f"👤 First_Name: {first_name}\n"
-                                                f"👤 Last_Name: {first_name}\n"
-                                                f"📲 Ref: {referer_user_id}")
+                    ref_id = "НЕТ" if referer_user_id is None else referer_user_id
+                    ref_name = "НЕТ" if ref_username is None else f"@{ref_username}"
+                    await bot.send_message(
+                        chat_id=admin,
+                        text=(f"ℹ️ NEW USER\n"
+                              f"📱 {new_user}\n"
+                              f"👥 UserName: @{user_name}\n"
+                              f"👤 First_Name: {first_name}\n"
+                              f"👤 Last_Name: {first_name}\n"
+                              f"📲 Ref: {ref_id}, {ref_name}")
+                    )
 
             await bot.send_message(chat_id=user_id,
                                    text=text.product,

@@ -149,7 +149,7 @@ async def create_links(message: types.Message):
 
 
 @dp.message_handler(commands=['add_balance'], state="*")
-async def create_promo(message: types.Message):
+async def add_balance_(message: types.Message):
     command_parts = message.get_args().split()
     telegram_id = message.from_user.id
     if message.from_user.id not in admins:

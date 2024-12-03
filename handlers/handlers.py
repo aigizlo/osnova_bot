@@ -227,10 +227,20 @@ async def pay_sucssess(user_id, amount, user_name, first_name, last_name, card=N
     # Покупка прошла
     period = period_json.get(int(amount * 10000))
     user_balance = user_data.get_user_balance_bonus(user_id)
+
+    referer_user_id = user_data.get_referrer_user_id(user_id)
+
+    if referer_user_id:
+        ref_username = user_data.get_referrer_username(user_id)
+
     if card:
         medthod_pay = "💳 RUB "
 
         for admin in const.admins_notify:
+            # Обрабатываем referer_user_id
+            ref_id = "НЕТ" if referer_user_id is None else referer_user_id
+            # Обрабатываем ref_username
+            ref_name = "НЕТ" if ref_username is None else f"@{ref_username}"
             await bot.send_message(chat_id=admin,
                                    text=f"🟢 {int(period // 30)} мес "
                                         f"{medthod_pay}, \n"
@@ -238,10 +248,15 @@ async def pay_sucssess(user_id, amount, user_name, first_name, last_name, card=N
                                         f"👥 UserName: : @{user_name}, \n"
                                         f"👤 First_Name: {first_name}, \n"
                                         f"👤 Last_Name  : {last_name}, \n"
+                                        f"📲 Ref: {ref_id}, {ref_name} \n"
                                         f"💰 Balance: {user_balance}")
     if usdt:
         medthod_pay = "💲 USDT"
         for admin in const.admins_notify:
+            # Обрабатываем referer_user_id
+            ref_id = "НЕТ" if referer_user_id is None else referer_user_id
+            # Обрабатываем ref_username
+            ref_name = "НЕТ" if ref_username is None else f"@{ref_username}"
             await bot.send_message(chat_id=admin,
                                    text=f"🔵 {int(period // 30)} мес "
                                         f"{medthod_pay}, \n"
@@ -249,6 +264,7 @@ async def pay_sucssess(user_id, amount, user_name, first_name, last_name, card=N
                                         f"👥 UserName: : @{user_name}, \n"
                                         f"👤 First_Name: {first_name}, \n"
                                         f"👤 Last_Name  : {last_name}, \n"
+                                        f"📲 Ref: {ref_id}, {ref_name} \n"
                                         f"💰 Balance: {user_balance}")
 
 
@@ -343,24 +359,20 @@ async def select_go_back_(callback_query: types.CallbackQuery, state: FSMContext
 async def select_go_back_to_main(callback_query: types.CallbackQuery, state: FSMContext):
     user_data_state = await state.get_data()
     user_id = callback_query.message.chat.id
-    month = user_data_state.get('month')
-    price = user_data_state.get('price')
-    days = user_data_state.get('days')
-    await state.update_data(present=None)
+    # month = user_data_state.get('month')
+    # price = user_data_state.get('price')
+    # days = user_data_state.get('days')
+    # await state.update_data(present=None)
 
-    txt_tarrif_info = text.tarrif_info(month, price, days)
+    # txt_tarrif_info = text.tarrif_info(month, price, days)
     try:
         if callback_query.message.message_id:
             await bot.delete_message(chat_id=callback_query.message.chat.id,
                                      message_id=callback_query.message.message_id)
     except Exception as e:
         logger.info("Сообщение не может быть удалено.")
-    await bot.send_message(chat_id=callback_query.message.chat.id,
-                           text=txt_tarrif_info,
-                           parse_mode="HTML",
-                           # 1 месяц - 30 дней - 15 USD
-                           # 3 месяц - 90 дней - 40 USD
-                           # 12 месяц - 365 дней - 150 USD
+    await bot.send_message(chat_id=user_id,
+                           text=text.product,
                            reply_markup=keyboards.keyboard_period())
     logger.info(f'user_id - {user_id} Вышел назад в глав меню')
 
@@ -468,13 +480,13 @@ async def if_user_not_subscribe_chat(user_id):
                 # Проверяем статус перед каждой отправкой
                 current_status = (await bot.get_chat_member(chat_id=const.chat_id, user_id=user_id)).status
                 if current_status == "left":
+                    await asyncio.sleep(sec)
                     await bot.send_message(
                         chat_id=user_id,
                         text=txt,
                         reply_markup=keyboards.join_chat(),
                         parse_mode="HTML"
                     )
-                    await asyncio.sleep(sec)
                 else:
                     # Если пользователь вступил, прекращаем отправку сообщений
                     logger.info(f'User {user_id} joined the chat')

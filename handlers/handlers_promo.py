@@ -42,6 +42,10 @@ async def insert_promo_codes(message: types.Message, state: FSMContext):
     first_name = message.from_user.first_name
     last_name = message.from_user.last_name
     is_promo_valid, promo_period = promo.check_promo_code(promo_code)
+    referer_user_id = user_data.get_referrer_user_id(user_id)
+    ref_user_name = None
+    if referer_user_id:
+        ref_user_name = user_data.get_referrer_username(user_id)
     if is_promo_valid:
         sub_active, answer = sub.activate_or_renewal_subscription(user_id, promo_period)
         user_balance = 0
@@ -53,6 +57,10 @@ async def insert_promo_codes(message: types.Message, state: FSMContext):
 
             try:
                 for admin in const.admins_notify:
+                    # Обрабатываем referer_user_id
+                    ref_id = "НЕТ" if referer_user_id is None else referer_user_id
+                    # Обрабатываем ref_username
+                    ref_name = "НЕТ" if ref_user_name is None else f"@{ref_user_name}"
                     await bot.send_message(chat_id=admin,
                                            text=f"🟡 {promo_period//30} мес\n"
                                                 f"💸 {promo_code}\n"
@@ -61,6 +69,7 @@ async def insert_promo_codes(message: types.Message, state: FSMContext):
                                                 f"👥 UserName: @{user_name}, \n"
                                                 f"👤 First_Name: {first_name}, \n"
                                                 f"👤 Last_Name: {last_name}, \n"
+                                                f"📲 Ref: {ref_id}, {ref_name}\n"
                                                 f"💰 Balance: {user_balance}")
 
             except Exception as e:
