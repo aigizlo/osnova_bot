@@ -151,10 +151,14 @@ def ref_link(count, balance):
 
 def ref_link2(user_id, bot_name):
     txt = f"""
-    <strong>Приглашаю тебя в закрытый клуб
+    <strong>🤝Приглашаю тебя в закрытый клуб
 "𝐎𝐒𝐍𝐎𝐕𝐀 | 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐂𝐥𝐮𝐛" </strong>
 
-по ссылке: <code>https://t.me/{bot_name}?start={user_id}</code>\n\n"""
+🔗 Переходи по ссылке:
+<code>https://t.me/{bot_name}?start={user_id}</code>\n
+Подписывайся на канал и вступай в чат  <strong>«ОСНОВАТЕЛИ»</strong>
+
+"""
     return txt
 
 
