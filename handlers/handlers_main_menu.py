@@ -22,7 +22,7 @@ tarif_info = f"""📚 Продукт: "ОСНОВА"
 
 
 @dp.message_handler(lambda message: message.text == '🗓 Тарифные планы', state='*')
-async def my_keys_command(message: types.Message, state: FSMContext):
+async def tariff_plans(message: types.Message, state: FSMContext):
 
     user_id = message.from_user.id
     await delete_from_channel(user_id)
@@ -35,7 +35,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(lambda message: message.text == '🗃 Моя подписка', state='*')
-async def my_keys_command(message: types.Message, state: FSMContext):
+async def my_keys_sub(message: types.Message, state: FSMContext):
 
     user_id = message.from_user.id
     stop_date = sub.get_subscription_info(user_id)
@@ -80,7 +80,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(lambda message: message.text == '🤝 Поддержка', state='*')
-async def my_keys_command(message: types.Message, state: FSMContext):
+async def support(message: types.Message, state: FSMContext):
 
     user_id = message.from_user.id
     await delete_from_channel(user_id)
@@ -95,7 +95,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
     logger.info(f'user_id - {user_id} - Поддержка')
 
 @dp.message_handler(lambda message: message.text == '👥 Реферальная программа', state='*')
-async def my_keys_command(message: types.Message, state: FSMContext):
+async def referral_program(message: types.Message, state: FSMContext):
 
 
     user_id = message.from_user.id
@@ -130,7 +130,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
 
     logger.info(f'user_id - {user_id} - Реферальная программа')
 @dp.message_handler(lambda message: message.text == '🎁 Пригласить друга', state='*')
-async def my_keys_command(message: types.Message, state: FSMContext):
+async def referral_program_2(message: types.Message, state: FSMContext):
 
 
     user_id = message.from_user.id
@@ -153,6 +153,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
                                reply_markup=keyboards.gift_promo(),
                                disable_web_page_preview=True)
     else:
+        
         await bot.send_message(chat_id=user_id,
                                text=txt1,
                                parse_mode='HTML',
@@ -167,7 +168,7 @@ async def my_keys_command(message: types.Message, state: FSMContext):
 
 
 @dp.message_handler(lambda message: message.text == 'Отзывы', state='*')
-async def my_keys_command(message: types.Message, state: FSMContext):
+async def otzivy(message: types.Message, state: FSMContext):
 
     user_id = message.from_user.id
     await delete_from_channel(user_id)

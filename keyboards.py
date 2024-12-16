@@ -45,6 +45,16 @@ def keyboard_period():
     )
     return keyboard
 
+def keyboard_period2():
+    keyboard = types.InlineKeyboardMarkup(row_width=1)
+    keyboard.add(
+        types.InlineKeyboardButton("1 месяц - 30 дней - 15 USD", callback_data=f"period:1"),
+        types.InlineKeyboardButton("3 месяца - 90 дней - 40 USD", callback_data=f"period:3"),
+        types.InlineKeyboardButton("12 месяцев - 365 дней - 150 USD", callback_data=f"period:12"),
+        types.InlineKeyboardButton("🎁 Применить промокод", callback_data="apply_promo"),
+    )
+    return keyboard
+
 
 def accept_button():
     keyboard = types.InlineKeyboardMarkup(row_width=1)
